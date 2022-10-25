@@ -55,6 +55,7 @@
   const groups = document.querySelector("#groups");
   const parameters = document.querySelector("#parameters");
   
+  // TODO: have parameter setting persist on group change
   groups.addEventListener("change", () => display(data[groups.value].options, parameters));
   groups.addEventListener("change", () => displayValues(data, groups.value));
   
