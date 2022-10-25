@@ -59,7 +59,7 @@
   groups.addEventListener("change", () => displayValues(data, groups.value));
   
   display(data, groups);
-  display(data[groups.value], parameters);
+  display(data[groups.value].options, parameters);
   (Object.keys(data)).map(group => values(group, data[group].values, document.getElementById("values")));
   displayValues(data, groups.value);
   
