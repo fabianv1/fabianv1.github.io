@@ -1,19 +1,87 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Hello World!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HTML 5 Boilerplate</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
+	  <h1>Demo</h1>
+    <div id="parameter">
+      <select id="groups"><option value="filter1">filter1</option><option value="envelope1">envelope1</option></select>
+      <select id="parameters"><option value="type">type</option><option value="frequency">frequency</option><option value="envelope">envelope</option></select>
+    </div>
+    
+    <div id="value">
+      <label id="value-label">Value:</label>
+      <input type="number" aria-labelledby="value-label" class="number" disabled="">
+      <select aria-labelledby="value-label" class="string"><option value="lowPass">lowPass</option><option value="highPass">highPass</option><option value="bandPass">bandPass</option></select>
+    </div>
 
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
+    <div id="status" role="status"></div>
+
+    <div style="position: static !important;"></div>
   </body>
 </html>
+
+
+<script>
+  const filterTypes = ["lowPass", "highPass", "bandPass"],
+  envelopeNames = ["envelope1", "envelope2"],
+  filterNames = ["filter1", "filter2"];
+  
+  const data = {
+    filter1: {
+      type: set("lowPass", filterTypes),
+      frequency: set(100.0),
+      envelope: set("envelope1", envelopeNames)
+    }, envelope1: {
+      attack: set(5),
+      sustain: set(10),
+      decay: set(3),
+      release: set(20),
+    }
+  };
+  
+  
+  const groups = document.querySelector("#groups");
+  const parameters = document.querySelector("#parameters");
+  
+  groups.addEventListener("change", () => display(data[groups.value], parameters));
+  parameters.addEventListener("change", () => displayValue(data[groups.value][parameters.value]));
+  
+  display(data, groups);
+  display(data[groups.value], parameters);
+  displayValue(data[groups.value][parameters.value]);
+  
+  function display (data, dom) {
+    dom.innerHTML = "";
+    if (not(data instanceof Array)) data = Object.keys(data);
+    for (let name of data) {
+      const option = document.createElement("option");
+      option.textContent = name;
+      option.setAttribute("value", name);
+      dom.add(option);
+    } // for
+  } // display
+  
+  function displayValue (data) {
+    const value = data.value;
+    const type = typeof(value);
+    const options = data.options;
+    
+    const dom = document.querySelector(`.${type}`);
+    if (type === "string") display(options, dom);
+    dom.value = value;
+    document.querySelector("#value .number").disabled = true;
+    document.querySelector("#value .string").disabled = true;
+    dom.disabled = false;
+  } // displayValue
+  
+  function set (value, options) {return {value, options};}
+  function not (x) {return !x;}
+  
+  </script>
