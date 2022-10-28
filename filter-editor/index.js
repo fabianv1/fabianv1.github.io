@@ -19,13 +19,39 @@ const data = {
               "treble", "mix", "loRetain", "outputVolume", "outputBalance"],
   },
   envelope1: {
-    options: ['fastAttack', 'fastestAttack', 'wideRange1', 'wideRange2', 'snappy',
-              'swell', 'ADSR1', 'ADSR2', 'ADSR3', 'ADSR4', 'ADSR5', 'ADSR6'],
+    options: [
+    'ADSR 1 Adjust Attack/Decay',
+    'Fast Attack, Adjust Decay',
+    'Wide Range 1, Adjust Attack/Decay',
+    'Swell',
+    'Wide Range 2, Faster Decay',
+    'Snappy',
+    'ADSR 2 Fast Attack, Adjust Decay',
+    'ADSR 3 Adjusst Attack/Decay',
+    'ADSR 4',
+    'ADSR 5',
+    'ADSR 6 Slow Attack, Fast Decay',
+    'Fastest Attack, Adjust/Decay',
+    'Wide Range 1, Adjust Attack/Decay'
+  ],
     values: ['speed', 'sensitivity', 'gate'],
   },
   envelope2: {
-    options: ['fastAttack', 'fastestAttack', 'wideRange1', 'wideRange2', 'snappy',
-              'swell', 'ADSR1', 'ADSR2', 'ADSR3', 'ADSR4', 'ADSR5', 'ADSR6'],
+    options: [
+      'ADSR 1 Adjust Attack/Decay',
+      'Fast Attack, Adjust Decay',
+      'Wide Range 1, Adjust Attack/Decay',
+      'Swell',
+      'Wide Range 2, Faster Decay',
+      'Snappy',
+      'ADSR 2 Fast Attack, Adjust Decay',
+      'ADSR 3 Adjusst Attack/Decay',
+      'ADSR 4',
+      'ADSR 5',
+      'ADSR 6 Slow Attack, Fast Decay',
+      'Fastest Attack, Adjust/Decay',
+      'Wide Range 1, Adjust Attack/Decay'
+    ],
     values: ['speed', 'sensitivity', 'gate'],
   },
 };
@@ -50,8 +76,8 @@ const userControls = [
 
 // Dropdowns each have their own number-to-value mapping, recorded here. 
 // As above, the index of an item in the list is its number.
-const dropdowns = {
-  'envelope1': [
+const dropdowns = { // TODO think about if we want the stuff here to be normal or short-form - maybe ask Rich
+  'envelope1-values': [
     'ADSR 1 Adjust Attack/Decay',
     'Fast Attack, Adjust Decay',
     'Wide Range 1, Adjust Attack/Decay',
@@ -66,7 +92,7 @@ const dropdowns = {
     'Fastest Attack, Adjust/Decay',
     'Wide Range 1, Adjust Attack/Decay'
   ],
-  'envelope2': [
+  'envelope2-values': [
     'ADSR 1 Adjust Attack/Decay',
     'Fast Attack, Adjust Decay',
     'Wide Range 1, Adjust Attack/Decay',
@@ -74,7 +100,7 @@ const dropdowns = {
     'Wide Range 2, Faster Decay',
     'Snappy',
     'ADSR 2 Fast Attack, Adjust Decay',
-    'ADSR 3 Adjusst Attack/Decay',
+    'ADSR 3 Adjust Attack/Decay',
     'ADSR 4',
     'ADSR 5',
     'ADSR 6 Slow Attack, Fast Decay',
@@ -113,16 +139,6 @@ display(data[groups.value].options, parameters);
 (Object.keys(data)).map(group => values(group, data[group].values, document.getElementById("values")));
 displayValues(data, groups.value);
 
-// TODO (goes somewhere in here + in sendMessage)
-// Have each value object, and each dropdown, have an onchange DONE
-// first check that the onchange has the same definition of change as I do DONE (not fully working)
-// then have the onchange call something like sendMessage(this.name, this.value) TODO
-// (SIDE NOTE: you will need to figure out what name and value actually are) DONE 
-// (SIDE SIDE NOTE: you may want to check Rich's suggested changes first in case that changes
-// where they're stored) TODO
-// such that sendMessage can then lookup this.name to find the correct userControlValue TODO
-// and then either send, or find (for knob vs dropdown) the correct data value TODO
-
 function values (group, data, dom) {
   for (let name of data) {
     const div = document.createElement("div");
@@ -141,7 +157,7 @@ function values (group, data, dom) {
     input.setAttribute("class", "number");
     input.setAttribute("min", 0);
     input.setAttribute("max", 254);
-    input.setAttribute("onchange", `console.log('${group}-${name}', this.value)`)
+    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.value)`)
     div.appendChild(input);
 
     dom.appendChild(div);
@@ -196,7 +212,15 @@ function displayValues (data, group) {
 */
 
 function sendMessage(control, value) {
-  console.log('starting to send');
+  console.log('starting to send', control, value);
+
+  const userControl = userControls.indexOf(control);
+  let dataValue = parseInt(value);
+  if (Number.isNaN(dataValue)) {
+    console.log("not number");
+    dataValue = dropdowns[control].indexOf(value);
+  }
+  console.log(userControl, dataValue);
 
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
