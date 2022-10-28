@@ -12,7 +12,7 @@ function not (x) {return !x;}
 // is the dropdown options and the 'values' array is the knob options.
 const data = {
   masterControls: {
-    options: ['noOptions'],
+    options: [],
     values: ["input1Gain", "input2Gain", "masterDepth", "modSource", "bass",
               "treble", "mix", "loRetain", "outputVolume", "outputBalance"],
   },
@@ -28,6 +28,59 @@ const data = {
   },
 };
 
+// User Control Numbers for each knob or dropdown.
+// The index of an item in the list is its user control number; items are named 
+// as `groupname-valuename` or , if it sets multiple values `groupname-values`. 
+const userControls = [
+  'masterControls-input1Gain',
+  'masterControls-input2Gain',
+  'masterControls-masterDepth',
+  // The ones above are real, the ones below are fake/for testing purposes
+  'envelope1-sensitivity',
+  'envelope1-speed',
+  'envelope1-gate',
+  'envelope1-values', //should actually be 0x58
+  'envelope2-sensitivity',
+  'envelope2-speed',
+  'envelope2-gate',
+  'envelope2-values',
+]
+
+// Dropdowns each have their own number-to-value mapping, recorded here. 
+// As above, the index of an item in the list is its number.
+const dropdowns = {
+  'envelope1': [
+    'ADSR 1 Adjust Attack/Decay',
+    'Fast Attack, Adjust Decay',
+    'Wide Range 1, Adjust Attack/Decay',
+    'Swell',
+    'Wide Range 2, Faster Decay',
+    'Snappy',
+    'ADSR 2 Fast Attack, Adjust Decay',
+    'ADSR 3 Adjusst Attack/Decay',
+    'ADSR 4',
+    'ADSR 5',
+    'ADSR 6 Slow Attack, Fast Decay',
+    'Fastest Attack, Adjust/Decay',
+    'Wide Range 1, Adjust Attack/Decay'
+  ],
+  'envelope2': [
+    'ADSR 1 Adjust Attack/Decay',
+    'Fast Attack, Adjust Decay',
+    'Wide Range 1, Adjust Attack/Decay',
+    'Swell',
+    'Wide Range 2, Faster Decay',
+    'Snappy',
+    'ADSR 2 Fast Attack, Adjust Decay',
+    'ADSR 3 Adjusst Attack/Decay',
+    'ADSR 4',
+    'ADSR 5',
+    'ADSR 6 Slow Attack, Fast Decay',
+    'Fastest Attack, Adjust/Decay',
+    'Wide Range 1, Adjust Attack/Decay'
+  ],
+}
+
 // User Control Numbers:
 // - Voice 1 Mode is            0x10
 // - Voice 2 Destination is     0x20
@@ -41,25 +94,6 @@ const data = {
 // - External Control Max 2 is  0xa0 -> 0x01, 0x20
 // - Engaged/Bypass Toggle is   0xb0 -> 0x01, 0x30
 // - Decrement Preset is        0xb5 -> 0x01, 0x35
-
-// For Envelope 1 Type (0x58) the dropdown options are:
-/*
-{
-  0x00 : 'ADSR 1 Adjust Attack/Decay',
-  0x01 : 'Fast Attack, Adjust Decay',
-  0x02 : 'Wide Range 1, Adjust Attack/Decay',
-  0x03 : 'Swell',
-  0x04 : 'Wide Range 2, Faster Decay',
-  0x05 : 'Snappy',
-  0x06 : 'ADSR 2 Fast Attack, Adjust Decay',
-  0x07 : 'ADSR 3 Adjusst Attack/Decay',
-  0x08 : 'ADSR 4',
-  0x09 : 'ADSR 5',
-  0x0a : 'ADSR 6 Slow Attack, Fast Decay',
-  0x0d : 'Fastest Attack, Adjust/Decay',
-  0x0e : 'Wide Range 1, Adjust Attack/Decay'
-}
-*/ 
 
 /*** 
  * Data generation 
@@ -134,7 +168,21 @@ function displayValues (data, group) {
  * Message sending 
  ***/
 
-function sendMessage() {
+/* Message syntax is as follows:
+[
+  SysEx Start (1 byte: 0xF0),
+  Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
+  Command Type (2 bytes: 0x00, 0x70 is Write User Control),
+  User Control Number (2 bytes: 0x00, 0x02 is Master Depth),
+  Data Value (4 bytes: 16-bits max input but most knobs are 8-bit with max value of 254 [more info below]),
+  SysEx End (1 byte: 0xf7)
+]
+* Note that because MIDI message contents can’t exceed 127 (0x7F),
+  8-bit values must be split into two 7-bit values. Since data can be 16 bits, it must have its
+  higher 8 bits split into 2 bytes and lower 8 bits split into two bytes, hence the 4 bytes
+*/
+
+function sendMessage(control, value) {
   console.log('starting to send');
 
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
@@ -145,21 +193,12 @@ function sendMessage() {
       input.open();
       output.open();
 
-      /* Message syntax is as follows:
-      [
-        SysEx Start (1 byte: 0xF0),
-        Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
-        Command Type (2 bytes: 0x00, 0x70 is Write User Control),
-        User Control Number (2 bytes: 0x00, 0x02 is Master Depth),
-        Data Value (4 bytes: 16-bits max input but most knobs are 8-bit with max value of 254 [more info below]),
-        SysEx End (1 byte: 0xf7)
-      ]
-      * Note that because MIDI message contents can’t exceed 127 (0x7F),
-        8-bit values must be split into two 7-bit values. Since data can be 16 bits, it must have its higher 8 bits 
-        split into 2 bytes and lower 8 bits split into two bytes, hence the 4 bytes
-      */
-      // Message currently hardcoded
-      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x70, 0x00, 0x58, 0x00, 0x00, 0x00, 0x0d, 0xf7]
+      // Bytes are annotated below, corresponding to the syntax given above. 
+      // Bytes that need to be set are marked *, the rest should not be changed
+      //     Start  ------ID------   --Command-- -Control*- ------Data Value*------  End
+      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf7]
+      msg[7] = control
+      msg[11] = value
       output.send(msg)
     })
   }
