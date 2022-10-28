@@ -6,6 +6,8 @@ function not (x) {return !x;}
 
 /*** 
  * Raw data storage 
+ * TODO: we likely want to export this section to its own file once it's complete 
+ * since it get be much longer
  ***/
 
 // Each object in data is one group of controls in the editor. The 'options' array
@@ -111,6 +113,16 @@ display(data[groups.value].options, parameters);
 (Object.keys(data)).map(group => values(group, data[group].values, document.getElementById("values")));
 displayValues(data, groups.value);
 
+// TODO (goes somewhere in here + in sendMessage)
+// Have each value object, and each dropdown, have an onchange DONE
+// first check that the onchange has the same definition of change as I do DONE (not fully working)
+// then have the onchange call something like sendMessage(this.name, this.value) TODO
+// (SIDE NOTE: you will need to figure out what name and value actually are) DONE 
+// (SIDE SIDE NOTE: you may want to check Rich's suggested changes first in case that changes
+// where they're stored) TODO
+// such that sendMessage can then lookup this.name to find the correct userControlValue TODO
+// and then either send, or find (for knob vs dropdown) the correct data value TODO
+
 function values (group, data, dom) {
   for (let name of data) {
     const div = document.createElement("div");
@@ -129,6 +141,7 @@ function values (group, data, dom) {
     input.setAttribute("class", "number");
     input.setAttribute("min", 0);
     input.setAttribute("max", 254);
+    input.setAttribute("onchange", `console.log('${group}-${name}', this.value)`)
     div.appendChild(input);
 
     dom.appendChild(div);
