@@ -7,7 +7,7 @@ function not (x) {return !x;}
 /*** 
  * Raw data storage 
  * TODO: we likely want to export this section to its own file once it's complete 
- * since it get be much longer
+ * since it will end up being much longer
  ***/
 
 // Each object in data is one group of controls in the editor. The 'options' array
@@ -76,7 +76,9 @@ const userControls = [
 
 // Dropdowns each have their own number-to-value mapping, recorded here. 
 // As above, the index of an item in the list is its number.
-const dropdowns = { // TODO think about if we want the stuff here to be normal or short-form - maybe ask Rich
+const dropdowns = { 
+  // TODO think about if we want the stuff here to be normal or short-form - maybe ask Rich
+  // note has to match whatever is above
   'envelope1-values': [
     'ADSR 1 Adjust Attack/Decay',
     'Fast Attack, Adjust Decay',
@@ -141,6 +143,7 @@ displayValues(data, groups.value);
 
 function values (group, data, dom) {
   for (let name of data) {
+    // TODO switch to making the labels as Rich advised
     const div = document.createElement("div");
     div.setAttribute('id', `${group}-${name}-value`);
     div.setAttribute('style', 'display: none;');
@@ -214,7 +217,7 @@ function displayValues (data, group) {
 function sendMessage(control, value) {
   console.log('starting to send', control, value);
 
-  const userControl = userControls.indexOf(control);
+  let userControl = userControls.indexOf(control);
   let dataValue = parseInt(value);
   if (Number.isNaN(dataValue)) {
     console.log("not number");
@@ -222,20 +225,22 @@ function sendMessage(control, value) {
   }
   console.log(userControl, dataValue);
 
+  // TODO byte manipulation
+
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
-      const input =  access.inputs.values().next().value;
+      // const input =  access.inputs.values().next().value;
       const output = access.outputs.values().next().value;
 
-      input.open();
+      // input.open();
       output.open();
 
       // Bytes are annotated below, corresponding to the syntax given above. 
       // Bytes that need to be set are marked *, the rest should not be changed
       //     Start  ------ID------   --Command-- -Control*- ------Data Value*------  End
       msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf7]
-      msg[7] = control
-      msg[11] = value
+      msg[7] = userControl;
+      msg[11] = dataValue;
       output.send(msg)
     })
   }
