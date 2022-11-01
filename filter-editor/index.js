@@ -143,25 +143,25 @@ displayValues(data, groups.value);
 
 function values (group, data, dom) {
   for (let name of data) {
-    // TODO switch to making the labels as Rich advised
     const div = document.createElement("div");
     div.setAttribute('id', `${group}-${name}-value`);
     div.setAttribute('style', 'display: none;');
     div.setAttribute('aria-hidden', 'true');
     
     const label = document.createElement("label");
-    label.setAttribute("id", `${group}-${name}`);
+    
     label.innerText = name + ":"
-    div.appendChild(label);
 
     const input = document.createElement("input");
+    input.setAttribute("id", `${group}-${name}`);
     input.setAttribute("type", "number");
-    input.setAttribute("aria-labelledby", `${group}-${name}`);
     input.setAttribute("class", "number");
     input.setAttribute("min", 0);
     input.setAttribute("max", 254);
-    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.value)`)
-    div.appendChild(input);
+    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.value)`);
+
+    label.appendChild(input);
+    div.appendChild(label);
 
     dom.appendChild(div);
   }
@@ -215,12 +215,12 @@ function displayValues (data, group) {
 */
 
 function sendMessage(control, value) {
-  console.log('starting to send', control, value);
+  console.log(`sending message from ${control} with value ${value}`);
 
   let userControl = userControls.indexOf(control);
-  let dataValue = parseInt(value);
+  let dataValue = parseInt(value); // value will either be an int or a string of text
   if (Number.isNaN(dataValue)) {
-    console.log("not number");
+    // if a string of text, it's an option in a dropdown, so find out what the corresponding number is
     dataValue = dropdowns[control].indexOf(value);
   }
   console.log(userControl, dataValue);
