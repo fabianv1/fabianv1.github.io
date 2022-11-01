@@ -130,7 +130,6 @@ const dropdowns = {
  ***/
 
 const groups = document.querySelector("#groups");
-// const parameters = document.querySelector("#parameters");
 
 // Initial creation steps for the settings
 createOptions(data, groups);
@@ -258,9 +257,11 @@ function sendMessage(control, value) {
     // if a string of text, it's an option in a dropdown, so find out what the corresponding number is
     dataValue = dropdowns[control].indexOf(value);
   }
-  console.log(userControl, dataValue);
 
-  // TODO byte manipulation
+  console.log(`Before byte manipulation, UCN is ${userControl}, DV is ${dataValue}`);
+  userControl = byteConvert(userControl);
+  dataValue = byteConvert(dataValue);
+  console.log(`After byte manipulation, UCN is ${userControl}, DV is ${dataValue}`);
 
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
@@ -274,11 +275,21 @@ function sendMessage(control, value) {
       // Bytes that need to be set are marked *, the rest should not be changed
       //     Start  ------ID------   --Command-- -Control*- ------Data Value*------  End
       msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf7]
-      msg[7] = userControl;
-      msg[11] = dataValue;
+
+      msg[6] = userControl[0];
+      msg[7] = userControl[1];
+      msg[10] = dataValue[0];
+      msg[11] = dataValue[1]
       output.send(msg)
     })
   }
+}
+
+function byteConvert(num) {
+  if (num < 128) {
+    return [0, num];
+  }
+  return [1, num-127];
 }
 
 
