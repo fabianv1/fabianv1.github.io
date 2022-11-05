@@ -97,7 +97,7 @@ function createCheckboxes (group, data, dom) {
     const input = document.createElement("input");
     input.setAttribute("id", `${group}-${name}`);
     input.setAttribute("type", "checkbox");
-    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.checked)`); // TODO message sending?
+    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.checked)`);
 
     label.appendChild(input);
     div.appendChild(label);

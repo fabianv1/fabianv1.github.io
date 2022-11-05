@@ -4,14 +4,12 @@
 
 // Each object in data is one group of controls in the editor. Each group
 // may have dropdowns, knobs, and/or checkboxes.
-const data = {
+const data = { // TODO missing a lot of stuff 
   masterControls: {
     dropdowns: {},
     knobs: ["input1Gain", "input2Gain", "masterDepth", "modSource", "bass",
               "treble", "mix", "loRetain", "outputVolume", "outputBalance"],
   },
-  // TODO missing voice and octave because they have two dropdowns and right now we're only equipped for 1
-  // also not sure if rich will use them, we can ask him
   processor1Distortion: {
     dropdowns: {
       type: ['mild'],
@@ -70,7 +68,7 @@ const data = {
         'Wide Range 2, Faster Decay',
         'Snappy',
         'ADSR 2 Fast Attack, Adjust Decay',
-        'ADSR 3 Adjusst Attack/Decay',
+        'ADSR 3 Adjust Attack/Decay',
         'ADSR 4',
         'ADSR 5',
         'ADSR 6 Slow Attack, Fast Decay',
@@ -90,7 +88,7 @@ const data = {
         'Wide Range 2, Faster Decay',
         'Snappy',
         'ADSR 2 Fast Attack, Adjust Decay',
-        'ADSR 3 Adjusst Attack/Decay',
+        'ADSR 3 Adjust Attack/Decay',
         'ADSR 4',
         'ADSR 5',
         'ADSR 6 Slow Attack, Fast Decay',
