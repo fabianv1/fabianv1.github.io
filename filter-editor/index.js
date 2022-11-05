@@ -97,7 +97,7 @@ function createCheckboxes (group, data, dom) {
     const input = document.createElement("input");
     input.setAttribute("id", `${group}-${name}`);
     input.setAttribute("type", "checkbox");
-    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.value)`); // TODO message sending?
+    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.checked)`); // TODO message sending?
 
     label.appendChild(input);
     div.appendChild(label);
@@ -194,8 +194,11 @@ function sendMessage(control, value) {
   let userControl = userControls.indexOf(control);
   let dataValue = parseInt(value); // value will either be an int or a string of text
   if (Number.isNaN(dataValue)) {
-    // if a string of text, it's an option in a dropdown, so find out what the corresponding number is
-    dataValue = dropdowns[control].indexOf(value);
+    if (typeof value === 'boolean') { // Checkbox
+      dataValue = value ? 1 : 0 // TODO: not sure how checkboxes are set in the editor
+    } else { // Dropdown option
+      dataValue = dropdowns[control].indexOf(value);
+    }
   }
 
   console.log(`Before byte manipulation, UCN is ${userControl}, DV is ${dataValue}`);

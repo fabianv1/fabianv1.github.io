@@ -17,34 +17,47 @@ const data = {
       type: ['mild'],
     }, // TODO get the other dropdown options
     knobs: ['drive', 'cleanMix', 'output'],
+    checkboxes: ['enable'],
   },
   processor2Distortion: {
     dropdowns: {
       type: ['mild'],
     }, // TODO get the other dropdown options
     knobs: ['drive', 'cleanMix', 'output'],
-    checkboxes: ['on'],
+    checkboxes: ['enable'],
   },
   // TODO get filtering working right
-  processor1Filtering: {
+  filter1: {
    dropdowns: {
       idk1: ['2poleLowPass'],
       idk2: ['env/LFO1'],
       idk3: ['pitchTrackOff']
     },
     knobs: ['depth', 'frequency', 'q'],
+    checkboxes: ['enable', 'invert'],
+  },
+  filter2: {
+    dropdowns: {
+       idk1: ['2poleLowPass'],
+       idk2: ['env/LFO1'],
+       idk3: ['pitchTrackOff']
+     },
+     knobs: ['depth', 'frequency', 'q'],
+     checkboxes: ['enable', 'invert'],
   },
   mix1: {
     dropdowns: {
       destination: ['output1Only'],
     }, // TODO get the other dropdown options
     knobs: [],
+    checkboxes: ['enable'],
   },
   mix2: {
     dropdowns: {
       destination: ['output1Only'],
     }, // TODO get the other dropdown options
     knobs: [],
+    checkboxes: ['enable'],
   },
   // TODO missing LFO 1 & 2 because they have a lot of settings I don't understand
   envelope1: {
