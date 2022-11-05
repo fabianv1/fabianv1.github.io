@@ -2,52 +2,53 @@
  * Raw data storage 
  ***/
 
-// Each object in data is one group of controls in the editor. The 'options' array
-// is the dropdown options and the 'values' array is the knob options.
+// Each object in data is one group of controls in the editor. Each group
+// may have dropdowns, knobs, and/or checkboxes.
 const data = {
   masterControls: {
-    options: {},
-    values: ["input1Gain", "input2Gain", "masterDepth", "modSource", "bass",
+    dropdowns: {},
+    knobs: ["input1Gain", "input2Gain", "masterDepth", "modSource", "bass",
               "treble", "mix", "loRetain", "outputVolume", "outputBalance"],
   },
   // TODO missing voice and octave because they have two dropdowns and right now we're only equipped for 1
   // also not sure if rich will use them, we can ask him
   processor1Distortion: {
-    options: {
+    dropdowns: {
       type: ['mild'],
-    }, // TODO get the other options
-    values: ['drive', 'cleanMix', 'output'],
+    }, // TODO get the other dropdown options
+    knobs: ['drive', 'cleanMix', 'output'],
   },
   processor2Distortion: {
-    options: {
+    dropdowns: {
       type: ['mild'],
-    }, // TODO get the other options
-    values: ['drive', 'cleanMix', 'output'],
+    }, // TODO get the other dropdown options
+    knobs: ['drive', 'cleanMix', 'output'],
+    checkboxes: ['on'],
   },
   // TODO get filtering working right
   processor1Filtering: {
-    options: {
+   dropdowns: {
       idk1: ['2poleLowPass'],
       idk2: ['env/LFO1'],
       idk3: ['pitchTrackOff']
     },
-    values: ['depth', 'frequency', 'q'],
+    knobs: ['depth', 'frequency', 'q'],
   },
   mix1: {
-    options: {
+    dropdowns: {
       destination: ['output1Only'],
-    }, // TODO get the other options
-    values: [],
+    }, // TODO get the other dropdown options
+    knobs: [],
   },
   mix2: {
-    options: {
+    dropdowns: {
       destination: ['output1Only'],
-    }, // TODO get the other options
-    values: [],
+    }, // TODO get the other dropdown options
+    knobs: [],
   },
   // TODO missing LFO 1 & 2 because they have a lot of settings I don't understand
   envelope1: {
-    options: {
+    dropdowns: {
       type: [
         'ADSR 1 Adjust Attack/Decay',
         'Fast Attack, Adjust Decay',
@@ -64,10 +65,10 @@ const data = {
         'Wide Range 1, Adjust Attack/Decay'
       ],
     },
-    values: ['speed', 'sensitivity', 'gate'],
+    knobs: ['speed', 'sensitivity', 'gate'],
   },
   envelope2: {
-    options: {
+    dropdowns: {
       type: [
         'ADSR 1 Adjust Attack/Decay',
         'Fast Attack, Adjust Decay',
@@ -84,7 +85,7 @@ const data = {
         'Wide Range 1, Adjust Attack/Decay'
       ],
     },
-    values: ['speed', 'sensitivity', 'gate'],
+    knobs: ['speed', 'sensitivity', 'gate'],
   },
 };
 
