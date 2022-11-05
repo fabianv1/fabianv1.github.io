@@ -6,64 +6,84 @@
 // is the dropdown options and the 'values' array is the knob options.
 const data = {
   masterControls: {
-    options: [],
+    options: {},
     values: ["input1Gain", "input2Gain", "masterDepth", "modSource", "bass",
               "treble", "mix", "loRetain", "outputVolume", "outputBalance"],
   },
   // TODO missing voice and octave because they have two dropdowns and right now we're only equipped for 1
   // also not sure if rich will use them, we can ask him
   processor1Distortion: {
-    options: ['mild'], // TODO get the other options
+    options: {
+      type: ['mild'],
+    }, // TODO get the other options
     values: ['drive', 'cleanMix', 'output'],
   },
   processor2Distortion: {
-    options: ['mild'], // TODO get the other options
+    options: {
+      type: ['mild'],
+    }, // TODO get the other options
     values: ['drive', 'cleanMix', 'output'],
   },
-  // TODO missing processor1/2filtering because they have two dropdowns
+  // TODO get filtering working right
+  processor1Filtering: {
+    options: {
+      idk1: ['2poleLowPass'],
+      idk2: ['env/LFO1'],
+      idk3: ['pitchTrackOff']
+    },
+    values: ['depth', 'frequency', 'q'],
+  },
   mix1: {
-    options: ['output1Only'], // TODO get the other options
+    options: {
+      destination: ['output1Only'],
+    }, // TODO get the other options
     values: [],
   },
   mix2: {
-    options: ['output1Only'], // TODO get the other options
+    options: {
+      destination: ['output1Only'],
+    }, // TODO get the other options
     values: [],
   },
   // TODO missing LFO 1 & 2 because they have a lot of settings I don't understand
   envelope1: {
-    options: [
-    'ADSR 1 Adjust Attack/Decay',
-    'Fast Attack, Adjust Decay',
-    'Wide Range 1, Adjust Attack/Decay',
-    'Swell',
-    'Wide Range 2, Faster Decay',
-    'Snappy',
-    'ADSR 2 Fast Attack, Adjust Decay',
-    'ADSR 3 Adjusst Attack/Decay',
-    'ADSR 4',
-    'ADSR 5',
-    'ADSR 6 Slow Attack, Fast Decay',
-    'Fastest Attack, Adjust/Decay',
-    'Wide Range 1, Adjust Attack/Decay'
-  ],
+    options: {
+      type: [
+        'ADSR 1 Adjust Attack/Decay',
+        'Fast Attack, Adjust Decay',
+        'Wide Range 1, Adjust Attack/Decay',
+        'Swell',
+        'Wide Range 2, Faster Decay',
+        'Snappy',
+        'ADSR 2 Fast Attack, Adjust Decay',
+        'ADSR 3 Adjusst Attack/Decay',
+        'ADSR 4',
+        'ADSR 5',
+        'ADSR 6 Slow Attack, Fast Decay',
+        'Fastest Attack, Adjust/Decay',
+        'Wide Range 1, Adjust Attack/Decay'
+      ],
+    },
     values: ['speed', 'sensitivity', 'gate'],
   },
   envelope2: {
-    options: [
-      'ADSR 1 Adjust Attack/Decay',
-      'Fast Attack, Adjust Decay',
-      'Wide Range 1, Adjust Attack/Decay',
-      'Swell',
-      'Wide Range 2, Faster Decay',
-      'Snappy',
-      'ADSR 2 Fast Attack, Adjust Decay',
-      'ADSR 3 Adjusst Attack/Decay',
-      'ADSR 4',
-      'ADSR 5',
-      'ADSR 6 Slow Attack, Fast Decay',
-      'Fastest Attack, Adjust/Decay',
-      'Wide Range 1, Adjust Attack/Decay'
-    ],
+    options: {
+      type: [
+        'ADSR 1 Adjust Attack/Decay',
+        'Fast Attack, Adjust Decay',
+        'Wide Range 1, Adjust Attack/Decay',
+        'Swell',
+        'Wide Range 2, Faster Decay',
+        'Snappy',
+        'ADSR 2 Fast Attack, Adjust Decay',
+        'ADSR 3 Adjusst Attack/Decay',
+        'ADSR 4',
+        'ADSR 5',
+        'ADSR 6 Slow Attack, Fast Decay',
+        'Fastest Attack, Adjust/Decay',
+        'Wide Range 1, Adjust Attack/Decay'
+      ],
+    },
     values: ['speed', 'sensitivity', 'gate'],
   },
 };

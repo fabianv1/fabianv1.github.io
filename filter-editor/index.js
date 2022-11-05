@@ -7,13 +7,14 @@ function not (x) {return !x;}
 /*** 
  * Data generation - relies on objects in data.js
  ***/
-// TODOs: add multiple dropdowns, enable checkboxes
+// TODOs: add enable/disable checkboxes
 
 const groups = document.querySelector("#groups");
 
 // Initial creation steps for the settings
 createOptions(data, groups);
-(Object.keys(data)).map(group => createOptions(data[group].options, document.getElementById('parameters'), group));
+(Object.keys(data)).map(group => Object.keys(data[group].options).forEach(
+  list => createOptions(data[group].options[list], document.getElementById('parameters'), `${group}-parameters-${list}`)));
 (Object.keys(data)).map(group => createValues(group, data[group].values, document.getElementById("values")));
 
 displayValues(data, groups.value);
@@ -23,30 +24,30 @@ displayOptions(data, groups.value);
 groups.addEventListener("change", () => displayOptions(data, groups.value));
 groups.addEventListener("change", () => displayValues(data, groups.value));
 
-function createOptions (data, dom, group = null) {
-  // Non-null group means we are creating multiple groups of options, so add them in
+function createOptions (data, dom, name = null) {
+  // Non-null `name` means we are creating multiple groups of options, so add them in
   // separate select containers and make them invisible for now
 
   if (not(data instanceof Array)) data = Object.keys(data);
   let container;
-  if (group != null) {
+  if (name != null) {
     container = document.createElement('select');
-    container.setAttribute('id', `${group}-parameters`);
+    container.setAttribute('id', name);
     container.setAttribute('style', 'display: none;');
     container.setAttribute('aria-hidden', 'true');
-    container.setAttribute('onchange', `sendMessage('${group}' + '-values', this.value)`);
+    container.setAttribute('onchange', `sendMessage('${name}', this.value)`);
   } else {
     container = dom;
   }
 
-  for (let name of data) {
+  for (let optionName of data) {
     const option = document.createElement("option");
-    option.textContent = name;
-    option.setAttribute("value", name);
+    option.textContent = optionName;
+    option.setAttribute("value", optionName);
     container.appendChild(option);
   }
 
-  if (group != null) {
+  if (name != null) {
     dom.appendChild(container);
   }
 }
@@ -78,15 +79,19 @@ function createValues (group, data, dom) {
 }
 
 function displayOptions(data, group) {
-  for (let name of Object.keys(data)) {
-    if (name === group) {  // Set select visible
-      const div = document.getElementById(`${name}-parameters`);
-      div.setAttribute('style', 'display: inline;');
-      div.setAttribute('aria-hidden', 'false');
+  for (let groupName of Object.keys(data)) {
+    if (groupName === group) {  // Set select visible
+      for (let optionsName of Object.keys(data[groupName].options)) {
+        const div = document.getElementById(`${groupName}-parameters-${optionsName}`);
+        div.setAttribute('style', 'display: inline;');
+        div.setAttribute('aria-hidden', 'false');
+      }
     } else {  // Set hidden
-      const div = document.getElementById(`${name}-parameters`);
-      div.setAttribute('style', 'display: none;');
-      div.setAttribute('aria-hidden', 'true');
+      for (let optionsName of Object.keys(data[groupName].options)) {
+        const div = document.getElementById(`${groupName}-parameters-${optionsName}`);
+        div.setAttribute('style', 'display: none;');
+        div.setAttribute('aria-hidden', 'true');
+      }
     }
   }
 }
