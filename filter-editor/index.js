@@ -7,6 +7,7 @@ function not (x) {return !x;}
 /*** 
  * Data generation - relies on objects in data.js
  ***/
+// TODOs: add multiple dropdowns, enable checkboxes
 
 const groups = document.querySelector("#groups");
 
