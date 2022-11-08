@@ -46,24 +46,26 @@ const data = {
     knobs: ['level', 'processor'],
     checkboxes: ['enable']
   },
-  octave1: {
-    dropdowns: {
-      source: ['down1', 'down2', 'up1'],
-      destination: ['distortionFilter', 'filterOnly', 'directOutput'],
+  // TODO: octave1 and octave2 correspond to voice3 and voice4, but need to figure out
+  // the trickier parts of the correspondence - in particular, what 'filtering' corresponds to
+  // octave1: {
+  //   dropdowns: {
+  //     source: ['down1', 'down2', 'up1'],
+  //     destination: ['distortionFilter', 'filterOnly', 'directOutput'],
       
-    },
-    knobs: ['level', 'processorPan', 'filtering'],
-    checkboxes: ['enable']
-  },
-  octave2: {
-    dropdowns: {
-      source: ['down1', 'down2', 'up1'],
-      destination: ['distortionFilter', 'filterOnly', 'directOutput'],
+  //   },
+  //   knobs: ['level', 'processorPan', 'filtering'],
+  //   checkboxes: ['enable']
+  // },
+  // octave2: {
+  //   dropdowns: {
+  //     source: ['down1', 'down2', 'up1'],
+  //     destination: ['distortionFilter', 'filterOnly', 'directOutput'],
       
-    },
-    knobs: ['level', 'processorPan', 'filtering'],
-      checkboxes: ['enable']
-  },
+  //   },
+  //   knobs: ['level', 'processorPan', 'filtering'],
+  //     checkboxes: ['enable']
+  // },
   filter1: {
    dropdowns: {
       type: ['3ParallelLowPass', '6PoleLowPass', '2PoleLowPass', 'NotchLowPassPeak', 'NotchNotchLowPass',
@@ -90,7 +92,7 @@ const data = {
     knobs: ['depth', 'frequency', 'q'],
     checkboxes: ['enable', 'invert'],
   },
-  mix1: {
+  mix1: { // TODO: not working right now
     dropdowns: {
       destination: ['output1Only', 'output1Output2, output2Only'],
     },
@@ -275,6 +277,8 @@ const userControls = [
   'lfo-envelopeSpeed',
   'lfo-envelopeDepth',
   'lfo-lfo2Phase',
+  'lfo-multiply',
+  'lfo-shape',
   'lfo-restartEnv1',
   'lfo-tap', // TODO don't understand
   // TODO stuff I don't understand

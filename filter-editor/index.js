@@ -192,10 +192,10 @@ function sendMessage(control, value) {
   console.log(`sending message from ${control} with value ${value}`);
 
   let userControl = userControls.indexOf(control);
-  let dataValue = parseInt(value); // value will either be an int or a string of text
+  let dataValue = parseInt(value);
   if (Number.isNaN(dataValue)) {
     if (typeof value === 'boolean') { // Checkbox
-      dataValue = value ? 1 : 0 // TODO: not sure how checkboxes are set in the editor
+      dataValue = value ? 1 : 0;
     } else { // Dropdown option
       dataValue = dropdowns[control].indexOf(value);
     }
