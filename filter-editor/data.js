@@ -356,7 +356,7 @@ const userControls = [
 // situation to figure out how to match each dropdown and recopy the info -- need
 // to work out a better way
 const dropdowns = { 
-  'envelope1-values': [
+  'envelope1-type': [
     'ADSR 1 Adjust Attack/Decay',
     'Fast Attack, Adjust Decay',
     'Wide Range 1, Adjust Attack/Decay',
@@ -371,7 +371,7 @@ const dropdowns = {
     'Fastest Attack, Adjust/Decay',
     'Wide Range 1, Adjust Attack/Decay'
   ],
-  'envelope2-values': [
+  'envelope2-type': [
     'ADSR 1 Adjust Attack/Decay',
     'Fast Attack, Adjust Decay',
     'Wide Range 1, Adjust Attack/Decay',
