@@ -15,7 +15,7 @@ const groups = document.querySelector("#groups");
 
 createDropdowns(data, groups);
 (Object.keys(data)).map(group => Object.keys(data[group].dropdowns).forEach(
-  list => createDropdowns(data[group].dropdowns[list], document.getElementById('parameters'), `${group}-parameters-${list}`)));
+  list => createDropdowns(data[group].dropdowns[list], document.getElementById('parameters'), `${group}-${list}`)));
 (Object.keys(data)).map(group => 
   createKnobs(group, data[group].knobs, document.getElementById("knobs")));
 (Object.keys(data)).map(group => 
@@ -118,13 +118,13 @@ function displayDropdowns(data, group) {
   for (let groupName of Object.keys(data)) {
     if (groupName === group) {  // Set select visible
       for (let optionsName of Object.keys(data[groupName].dropdowns)) {
-        const div = document.getElementById(`${groupName}-parameters-${optionsName}`);
+        const div = document.getElementById(`${groupName}-${optionsName}`);
         div.setAttribute('style', 'display: inline;');
         div.setAttribute('aria-hidden', 'false');
       }
     } else {  // Set hidden
       for (let optionsName of Object.keys(data[groupName].dropdowns)) {
-        const div = document.getElementById(`${groupName}-parameters-${optionsName}`);
+        const div = document.getElementById(`${groupName}-${optionsName}`);
         div.setAttribute('style', 'display: none;');
         div.setAttribute('aria-hidden', 'true');
       }
