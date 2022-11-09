@@ -123,7 +123,7 @@ const data = {
         'Fastest Attack, Adjust/Decay',
         'Wide Range 1, Adjust Attack/Decay'
       ],
-      input: ['1', '2'],
+      input: ['1', '2'], // these seemed to be reversed but then swapping them did not help...
     },
     knobs: ['speed', 'sensitivity', 'gate'],
   },
@@ -144,6 +144,7 @@ const data = {
         'Fastest Attack, Adjust/Decay',
         'Wide Range 1, Adjust Attack/Decay'
       ],
+      input: ['1', '2'],
     },
     knobs: ['speed', 'sensitivity', 'gate'],
   },

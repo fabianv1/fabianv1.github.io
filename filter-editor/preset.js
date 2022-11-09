@@ -1,24 +1,36 @@
-/*** 
- * Message sending 
+/***
+ * Functions that burn and load presets on the filter pedal itself
  ***/
 
-/* Message syntax is as follows:
-[
-  SysEx Start (1 byte: 0xF0),
-  Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
-  Command Type (2 bytes: 0x00, 0x70 is Write User Control),
-  User Control Number (2 bytes: 0x00, 0x02 is Master Depth),
-  Data Value (4 bytes: 16-bits max input but most knobs are 8-bit with max value of 254 [more info below]),
-  SysEx End (1 byte: 0xf7)
-]
-* Note that because MIDI message contents can’t exceed 127 (0x7F),
-  8-bit values must be split into two 7-bit values. Since data can be 16 bits, it must have its
-  higher 8 bits split into 2 bytes and lower 8 bits split into two bytes, hence the 4 bytes
-*/
+/**
+ * Burns the current settings of the filter pedal to a preset at the given index.
+ * @param presetIndex a value from 0-127
+ */
+function burnPreset(presetIndex) {
+  console.log(`setting preset at index ${presetIndex}`);
 
-function setPreset() {
-  // console.log(`setting preset at index ${presetIndex} with name ${name}`);
-  console.log(`setting preset at index 7 with name hi`);
+  if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
+    .then((access) => {
+      const output = access.outputs.values().next().value;
+
+      output.open();
+
+      // Bytes are annotated below, corresponding to the syntax given by SourceAudio. 
+      // Bytes that need to be set are marked *, the rest should not be changed
+      //     Start  ------ID------   --Command-- ---presetIndex*-- --If Name-- -End-
+      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x6e, 0x00, presetIndex, 0x00, 0x00, 0xf7];
+
+      output.send(msg);
+    })
+  }
+}
+
+/**
+ * Loads the filter pedal settings of the preset at the given index.
+ * @param presetIndex a value from 0-127
+ */
+function loadPreset(presetIndex) {
+  console.log(`loading preset hi from index ${presetIndex}}`);
 
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
@@ -28,47 +40,53 @@ function setPreset() {
 
       // Bytes are annotated below, corresponding to the syntax given above. 
       // Bytes that need to be set are marked *, the rest should not be changed
-      //     Start  ------ID------   --Command-- -Preset Index- -If Name-
-      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x6e, 0x00, 0x11, 0x00, 0x01,
-          // Each of the following lines are 8 bytes of ascii characters (each represented by two 7-bit words)
-          // these are 
-             0x00, 0x68, 0x00, 0x69, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-          // End
-             0xf7];
+      //     Start  ------ID------   --Command-- ---presetIndex--- -End-
+      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x77, 0x00, presetIndex, 0xf7];
 
       output.send(msg);
     })
   }
 }
 
-function loadPreset() {
-  console.log(`loading preset hi from index 7`);
+const presetDom = document.getElementById('presets');
 
-  if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
-    .then((access) => {
-      const output = access.outputs.values().next().value;
+// title heading of preset section
+const presetTitle = document.createElement('h2');
+presetTitle.innerText = 'Presets';
+presetDom.appendChild(presetTitle)
 
-      output.open();
+// the div containing the presetIndex input
+const presetIndexDiv = document.createElement("div");
+presetIndexDiv.setAttribute('id', 'presetIndex-value');
+presetIndexDiv.setAttribute('style', 'display: block;');
+presetIndexDiv.setAttribute('aria-hidden', 'false');
 
-      // Bytes are annotated below, corresponding to the syntax given above. 
-      // Bytes that need to be set are marked *, the rest should not be changed
-      //     Start  ------ID------   --Command-- -Preset Index- -End-
-      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x77, 0x00, 0x07, 0xf7];
+// label surrounding the presetIndex input
+const presetIndexlabel = document.createElement("label");
+presetIndexlabel.innerText = "presetIndex:"
 
-      output.send(msg);
-    })
-  }
-}
+// number input pertaining to a preset index
+const presetIndexInput = document.createElement("input");
+presetIndexInput.setAttribute("id", 'presetIndex');
+presetIndexInput.setAttribute("type", "number");
+presetIndexInput.setAttribute("class", "number");
+presetIndexInput.setAttribute("min", 0);
+presetIndexInput.setAttribute("max", 127);
+presetIndexInput.setAttribute("value", 6);
 
-const button = document.createElement("button");
-button.setAttribute('onclick', 'setPreset()');
-button.innerText = 'Set current settings as a preset';
-document.getElementById('presets').appendChild(button);
+// adding to the dom
+presetIndexlabel.appendChild(presetIndexInput);
+presetIndexDiv.appendChild(presetIndexlabel);
+presetDom.appendChild(presetIndexDiv);
 
+// button to prompt a burning of a new preset
+const burnButton = document.createElement("button");
+burnButton.setAttribute('onclick', 'burnPreset(presetIndexInput.value)');
+burnButton.innerText = 'Burn current settings at preset at index given above';
+document.getElementById('presets').appendChild(burnButton);
+
+// button to prompt the loading of a preset
 const loadButton = document.createElement("button");
-loadButton.setAttribute('onclick', 'loadPreset()');
-loadButton.innerText = 'Load preset 7';
+loadButton.setAttribute('onclick', 'loadPreset(presetIndexInput.value)');
+loadButton.innerText = 'Load preset at index given above';
 document.getElementById('presets').appendChild(loadButton)
