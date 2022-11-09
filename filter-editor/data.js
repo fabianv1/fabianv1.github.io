@@ -8,7 +8,7 @@ const data = {
   masterControls: {
     dropdowns: {},
     knobs: ["input1Gain", "input2Gain", "masterDepth", "modSource", "bass",
-              "treble", "mix", "loRetain", "outputVolume", "outputLevel"],
+              "treble", "mix", "loRetain", "outputLevel", "outputBalance"],
   },
   distortion: {
     dropdowns: {
@@ -92,16 +92,16 @@ const data = {
     knobs: ['depth', 'frequency', 'q'],
     checkboxes: ['enable', 'invert'],
   },
-  mix1: { // TODO: not working right now
+  mix1: { // TODO: not working right now, maybe a sourceaudio bug, maybe our numbers are off
     dropdowns: {
-      destination: ['output1Only', 'output1Output2, output2Only'],
+      destination: ['output1Only', 'output1Output2', 'output2Only'],
     },
     knobs: [],
     checkboxes: ['enable'],
   },
   mix2: {
     dropdowns: {
-      destination: ['output1Only', 'output1Output2, output2Only'],
+      destination: ['output1Only', 'output1Output2', 'output2Only'],
     },
     knobs: [],
     checkboxes: ['enable'],
@@ -123,7 +123,7 @@ const data = {
         'Fastest Attack, Adjust/Decay',
         'Wide Range 1, Adjust Attack/Decay'
       ],
-      input: ['1', '2'], // these seemed to be reversed but then swapping them did not help...
+      input: ['1', '2'], // TODO these seemed to be reversed but then swapping them did not help, maybe a sourceaudio bug?
     },
     knobs: ['speed', 'sensitivity', 'gate'],
   },
@@ -174,8 +174,8 @@ const userControls = [
   'masterControls-treble',
   'masterControls-mix',
   'masterControls-loRetain',
-  'masterControls-outputVolume',
   'masterControls-outputLevel',
+  'masterControls-outputBalance',
   // Voice groups (many of the voice 1 and voice 2 functions don't seem to exist in the editor)
   'voice1-level',
   'voice1-processor',
@@ -249,7 +249,7 @@ const userControls = [
   'filter2-depth',
   'filter2-frequency',
   'filter2-q',
-  'filter2-values',
+  'filter2-type',
   'filter2-modSource',
   'filter2-invert',
   'filter2-enable',
@@ -283,7 +283,7 @@ const userControls = [
   'lfo-restartEnv1',
   'lfo-tap', // TODO don't understand
   // TODO stuff I don't understand
-  'sequencer1Steps',
+  'sequencer1Steps', // TODO list numbers seem to get off around here
   'sequencer1value1',
   'sequencer1value2',
   'sequencer1value3',
@@ -355,12 +355,9 @@ const userControls = [
   'decrementPreset',
 ]
 
-// Dropdowns each have their own number-to-value mapping, recorded here. 
-// As above, the index of an item in the list is its number.
-// TODO these aren't updated with the data above; also kind of an untenable
-// situation to figure out how to match each dropdown and recopy the info -- need
-// to work out a better way
-const dropdowns = { 
+// Dropdowns each have their own number-to-value mapping. Many default to being
+// simply in-order; ones which have a distinct order are separately recorded here.
+const differentlyOrderedDropdowns = { 
   'envelope1-type': [
     'ADSR 1 Adjust Attack/Decay',
     'Fast Attack, Adjust Decay',
@@ -399,8 +396,8 @@ const dropdowns = {
 // - Voice 3 Enable is          0x30
 // - Distortion - Output is     0x40
 // - Filter 2 Mod Source is     0x50
-// - Sine 2 FM Depth is         0x60
-// - Sequencer 1 Value 3 is     0x70
+// - Sine 2 FM Depth is         0x60 // correctly is number 0x60 = 96 in list rn
+// - Sequencer 1 Value 3 is     0x70 // incorrectly is 110 in list rn, two smaller than it should be
 // - Sequencer 2 Value 2 is     0x80 -> 0x01, 0x00
 // - Harmony Key is            0x90 -> 0x01, 0x10
 // - External Control Max 2 is  0xa0 -> 0x01, 0x20

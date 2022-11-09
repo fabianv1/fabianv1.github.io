@@ -192,13 +192,20 @@ function sendMessage(control, value) {
   console.log(`sending message from ${control} with value ${value}`);
 
   let userControl = userControls.indexOf(control);
-  let dataValue = parseInt(value);
-  if (Number.isNaN(dataValue)) {
-    if (typeof value === 'boolean') { // Checkbox
-      dataValue = value ? 1 : 0;
-    } else { // Dropdown option
-      dataValue = dropdowns[control].indexOf(value);
+  const group = control.split('-')[0];
+  const option = control.split('-')[1];
+
+  // value could be a number, boolean, or string depending on what kind of option is in control
+  if (Object.keys(data[group]['dropdowns']).includes(option)) {  // dropdown -> string
+    if (control in differentlyOrderedDropdowns) {
+      dataValue = differentlyOrderedDropdowns[control].indexOf(value);
+    } else {
+      dataValue = data[group]['dropdowns'][option].indexOf(value);
     }
+  } else if (Object.keys(data[group]['knobs']).includes(option)) {  // knob -> number
+    dataValue = parseInt(value);
+  } else {  // checkbox -> boolean
+    dataValue = value ? 1 : 0;
   }
 
   console.log(`Before byte manipulation, UCN is ${userControl}, DV is ${dataValue}`);
@@ -208,10 +215,7 @@ function sendMessage(control, value) {
 
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
-      // const input =  access.inputs.values().next().value;
       const output = access.outputs.values().next().value;
-
-      // input.open();
       output.open();
 
       // Bytes are annotated below, corresponding to the syntax given above. 
