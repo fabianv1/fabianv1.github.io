@@ -73,6 +73,7 @@ presetIndexInput.setAttribute("class", "number");
 presetIndexInput.setAttribute("min", 0);
 presetIndexInput.setAttribute("max", 127);
 presetIndexInput.setAttribute("value", 6);
+presetIndexInput.setAttribute("accesskey", "p");
 
 // adding to the dom
 presetIndexlabel.appendChild(presetIndexInput);
