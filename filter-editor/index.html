@@ -46,7 +46,18 @@
     
     <fieldset id="presets">
       <legend><h2>Presets</h2></legend>
-      <!-- Overall list of presets -->
+      <div id="presetIndex-value">
+        <label> presetIndex:
+          <input type="number" class="number" id="presetIndex" min="0" max="127" value="6" accesskey="p">
+        </label>
+      </div>
+      <!-- TODO: consider adding name input field or dropdown once we can read from filter -->
+      <button onclick="burnPreset(presetIndexInput.value)">
+        Burn current filter settings to given preset index
+      </button>
+      <button onclick="loadPreset(presetIndexInput.value)">
+        Load preset at given index into filter
+      </button>
     </fieldset>
 
     <!-- The script needs to be at the end of the body so that it's 
