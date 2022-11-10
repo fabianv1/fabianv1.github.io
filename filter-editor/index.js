@@ -35,9 +35,7 @@ function createDropdowns (data, dom, name = null) {
   let container;
   if (name != null) {
     container = document.createElement('select');
-    container.setAttribute('id', name);
-    container.setAttribute('style', 'display: none;');
-    container.setAttribute('aria-hidden', 'true');
+    
     container.setAttribute('onchange', `sendMessage('${name}', this.value)`);
   } else {
     container = dom;
@@ -51,7 +49,13 @@ function createDropdowns (data, dom, name = null) {
   }
 
   if (name != null) {
-    dom.appendChild(container);
+    const label = document.createElement('label');
+    label.setAttribute('id', name);
+    label.setAttribute('name', name.split('-')[1]); // TODO make sure the label name is being read on screenreader
+    label.setAttribute('style', 'display: none;');
+    label.setAttribute('aria-hidden', 'true');
+    label.appendChild(container);
+    dom.appendChild(label);
   }
 }
 
