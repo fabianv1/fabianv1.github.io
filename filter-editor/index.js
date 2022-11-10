@@ -15,7 +15,7 @@ const groups = document.querySelector("#groups");
 
 createDropdowns(data, groups);
 (Object.keys(data)).map(group => Object.keys(data[group].dropdowns).forEach(
-  list => createDropdowns(data[group].dropdowns[list], document.getElementById('parameters'), `${group}-${list}`)));
+  list => createDropdowns(data[group].dropdowns[list], document.getElementById('dropdowns'), `${group}-${list}`)));
 (Object.keys(data)).map(group => 
   createKnobs(group, data[group].knobs, document.getElementById("knobs")));
 (Object.keys(data)).map(group => 

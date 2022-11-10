@@ -50,11 +50,6 @@ function loadPreset(presetIndex) {
 
 const presetDom = document.getElementById('presets');
 
-// title heading of preset section
-const presetTitle = document.createElement('h2');
-presetTitle.innerText = 'Presets';
-presetDom.appendChild(presetTitle)
-
 // the div containing the presetIndex input
 const presetIndexDiv = document.createElement("div");
 presetIndexDiv.setAttribute('id', 'presetIndex-value');
