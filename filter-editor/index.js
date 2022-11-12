@@ -51,7 +51,7 @@ function createDropdowns (data, dom, name = null) {
   if (name != null) {
     const label = document.createElement('label');
     label.setAttribute('id', name);
-    label.setAttribute('name', name.split('-')[1]); // TODO make sure the label name is being read on screenreader
+    label.innerText = name.split('-')[1] + ': ';
     label.setAttribute('style', 'display: none;');
     label.setAttribute('aria-hidden', 'true');
     label.appendChild(container);
