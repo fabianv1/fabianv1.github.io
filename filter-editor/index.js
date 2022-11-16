@@ -206,7 +206,7 @@ function sendMessage(control, value) {
     } else {
       dataValue = data[group]['dropdowns'][option].indexOf(value);
     }
-  } else if (Object.keys(data[group]['knobs']).includes(option)) {  // knob -> number
+  } else if (data[group]['knobs'].includes(option)) {  // knob -> number
     dataValue = parseInt(value);
   } else {  // checkbox -> boolean
     dataValue = value ? 1 : 0;
