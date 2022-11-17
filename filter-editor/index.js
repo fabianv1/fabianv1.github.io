@@ -192,6 +192,27 @@ function displayCheckboxes(data, group) {
   higher 8 bits split into 2 bytes and lower 8 bits split into two bytes, hence the 4 bytes
 */
 
+function sendReadMessage() {
+  if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
+    .then((access) => {
+      const output = access.outputs.values().next().value;
+      output.open();
+      const input = access.inputs.values().next().value;
+      input.open();
+      input.onmidimessage = (message) => {
+        console.log(message.data);
+      }
+
+      // Bytes are annotated below, corresponding to the syntax given above. 
+      // Bytes that need to be set are marked *, the rest should not be changed
+      //     Start  ------ID------   --Command-- -Control*- ------Data Value*------  End
+      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0xf7]
+      output.send(msg);
+
+    })
+  }
+}
+
 function sendMessage(control, value) {
   console.log(`sending message from ${control} with value ${value}`);
 
