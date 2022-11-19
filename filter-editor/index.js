@@ -1,15 +1,9 @@
-/*** 
- * Helper functions 
- ***/
+// Data generation - relies on objects in data.js to generate the dropdown for each group
+// and each group's associated dropdowns, value knobs, and checkboxes
 
-function not (x) {return !x;}
-
-/*** 
- * Data generation - relies on objects in data.js to generate the dropdown for each group
- * and each group's associated dropdowns, value knobs, and checkboxes
- ***/
-
-// Initial creation steps for the settings
+/**
+ * Initial creation steps for the settings
+ **/
 
 const groups = document.querySelector("#groups");
 
@@ -25,18 +19,20 @@ changeGroupDisplay(data, groups.value); // Display for initial group
 // Event listener to change which group's settings are being displayed
 groups.addEventListener("change", () => changeGroupDisplay(data, groups.value));
 
-// Creation functions
+/**
+ * Creation functions
+ **/
 
 function createDropdowns (data, dom, name = null) {
   // Non-null `name` means we are creating multiple groups of options, so add them in
   // separate select containers and make them invisible for now
 
-  if (not(data instanceof Array)) data = Object.keys(data);
+  if (!(data instanceof Array)) data = Object.keys(data);
   let container;
   if (name != null) {
     container = document.createElement('select');
     
-    container.setAttribute('onchange', `sendMessage('${name}', this.value)`);
+    container.setAttribute('onchange', `sendWriteMessage('${name}', this.value)`);
   } else {
     container = dom;
   }
@@ -76,7 +72,7 @@ function createKnobs (group, data, dom) {
     input.setAttribute("class", "number");
     input.setAttribute("min", 0);
     input.setAttribute("max", 254);
-    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.value)`);
+    input.setAttribute("onchange", `sendWriteMessage('${group}-${name}', this.value)`);
 
     label.appendChild(input);
     div.appendChild(label);
@@ -101,7 +97,7 @@ function createCheckboxes (group, data, dom) {
     const input = document.createElement("input");
     input.setAttribute("id", `${group}-${name}`);
     input.setAttribute("type", "checkbox");
-    input.setAttribute("onchange", `sendMessage('${group}-${name}', this.checked)`);
+    input.setAttribute("onchange", `sendWriteMessage('${group}-${name}', this.checked)`);
 
     label.appendChild(input);
     div.appendChild(label);
@@ -110,7 +106,9 @@ function createCheckboxes (group, data, dom) {
   }
 }
 
-// Display functions
+/**
+ * Display/update functions
+ **/
 
 function changeGroupDisplay(data, group) {
   displayDropdowns(data, group);
@@ -173,96 +171,3 @@ function displayCheckboxes(data, group) {
     }
   }
 }
-
-/*** 
- * Message sending 
- ***/
-
-/* Message syntax is as follows:
-[
-  SysEx Start (1 byte: 0xF0),
-  Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
-  Command Type (2 bytes: 0x00, 0x70 is Write User Control),
-  User Control Number (2 bytes: 0x00, 0x02 is Master Depth),
-  Data Value (4 bytes: 16-bits max input but most knobs are 8-bit with max value of 254 [more info below]),
-  SysEx End (1 byte: 0xf7)
-]
-* Note that because MIDI message contents can’t exceed 127 (0x7F),
-  8-bit values must be split into two 7-bit values. Since data can be 16 bits, it must have its
-  higher 8 bits split into 2 bytes and lower 8 bits split into two bytes, hence the 4 bytes
-*/
-
-function sendReadMessage() {
-  if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
-    .then((access) => {
-      const output = access.outputs.values().next().value;
-      output.open();
-      const input = access.inputs.values().next().value;
-      input.open();
-      input.onmidimessage = (message) => {
-        console.log(message.data);
-      }
-
-      // Bytes are annotated below, corresponding to the syntax given above. 
-      // Bytes that need to be set are marked *, the rest should not be changed
-      //     Start  ------ID------   --Command-- -Control*- ------Data Value*------  End
-      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0xf7]
-      output.send(msg);
-
-    })
-  }
-}
-
-function sendMessage(control, value) {
-  console.log(`sending message from ${control} with value ${value}`);
-
-  let userControl = userControls.indexOf(control);
-  const group = control.split('-')[0];
-  const option = control.split('-')[1];
-
-  // value could be a number, boolean, or string depending on what kind of option is in control
-  if (Object.keys(data[group]['dropdowns']).includes(option)) {  // dropdown -> string
-    if (control in differentlyOrderedDropdowns) {
-      dataValue = differentlyOrderedDropdowns[control].indexOf(value);
-    } else {
-      dataValue = data[group]['dropdowns'][option].indexOf(value);
-    }
-  } else if (data[group]['knobs'].includes(option)) {  // knob -> number
-    dataValue = parseInt(value);
-  } else {  // checkbox -> boolean
-    dataValue = value ? 1 : 0;
-  }
-
-  console.log(`Before byte manipulation, UCN is ${userControl}, DV is ${dataValue}`);
-  userControl = byteConvert(userControl);
-  dataValue = byteConvert(dataValue);
-  console.log(`After byte manipulation, UCN is ${userControl}, DV is ${dataValue}`);
-
-  if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
-    .then((access) => {
-      const output = access.outputs.values().next().value;
-      output.open();
-
-      // Bytes are annotated below, corresponding to the syntax given above. 
-      // Bytes that need to be set are marked *, the rest should not be changed
-      //     Start  ------ID------   --Command-- -Control*- ------Data Value*------  End
-      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf7]
-
-      msg[6] = userControl[0];
-      msg[7] = userControl[1];
-      msg[10] = dataValue[0];
-      msg[11] = dataValue[1]
-      output.send(msg)
-    })
-  }
-}
-
-function byteConvert(num) {
-  if (num < 128) {
-    return [0, num];
-  }
-  return [1, num-127];
-}
-
-
-
