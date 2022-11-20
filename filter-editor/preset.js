@@ -30,7 +30,7 @@ function burnPreset(presetIndex) {
  * @param presetIndex a value from 0-127
  */
 function loadPreset(presetIndex) {
-  console.log(`loading preset hi from index ${presetIndex}}`);
+  console.log(`loading preset from index ${presetIndex}`);
 
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
