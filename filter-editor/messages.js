@@ -24,13 +24,15 @@
 // Two kinds of messages: 
 // 1) status of single filter value
 // 2) status of overall filter (called 'ping')
-let controlBeingRead = null;
+// let controlBeingRead = null;
+let messageOrder = 0;
+let messagesArray = []
 if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
   .then((access) => {
     const input = access.inputs.values().next().value;
     input.open();
     input.onmidimessage = (message) => {
-      console.log(message.data)
+      // console.log(message.data)
       if (message.data.length == 12) updateReadValue(message);
       if (message.data.length == 80) updatePingResult(message);
     }
@@ -59,7 +61,7 @@ function sendPingMessage() {
 function updatePingResult(message) {
   latestPingData = message;
   if (message.data[70] === 1) { // preset_edit flag is true
-    console.log('edit')
+    console.log('Value edited on filter.')
     burnPreset(127);
     loadPreset(127);
     readAllValues();
@@ -71,10 +73,15 @@ window.setInterval(sendPingMessage, 1000);
 
 // Send a read message to every control
 function readAllValues() {
+  messageOrder = 0;
+  messagesArray = []
   for (control of userControls) {
     if (document.getElementById(control) != null) {
+      messagesArray.push(control);
       // Some controls are listed for completeness but don't exist in code (see data.js for more)
       sendReadMessage(control);
+    } else {
+
     }
   }
 }
@@ -84,11 +91,11 @@ function readAllValues() {
  **/
 
 function sendReadMessage(control) {
-  console.log(`sending read message from ${control} with value`);
-
+  // console.log(`sending read message from ${control} with value`);
+  messageReceived = false;
   let userControl = userControls.indexOf(control);
   userControl = byteConvert(userControl);
-  console.log(`UCN is ${userControl}`);
+  // console.log(`UCN is ${userControl}`);
   controlBeingRead = control;
 
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
@@ -113,12 +120,12 @@ function updateReadValue(message) {
   // Start --Command-- -------------------Data Value-----------------  End
   // 0xF0, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x14, 0xF7
   // Data value is almost always only last two bytes
-
+  let controlBeingRead = messagesArray[messageOrder]
   const elmnt = document.getElementById(controlBeingRead);
   const group = controlBeingRead.split('-')[0];
   const option = controlBeingRead.split('-')[1];
 
-  const value = byteDeconvert([message[9], message[10]]);
+  const value = byteDeconvert([message.data[9], message.data[10]]);
   // value could correspond to a number, boolean, or string depending on what kind of option is in control
   if (Object.keys(data[group]['dropdowns']).includes(option)) {  // dropdown -> string
     if (control in differentlyOrderedDropdowns) {
@@ -132,6 +139,7 @@ function updateReadValue(message) {
   } else {  // checkbox -> boolean
     elmnt.checked = value == 1;
   }
+  messageOrder++;
 }
 
 /**
