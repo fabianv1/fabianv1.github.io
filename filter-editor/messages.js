@@ -30,8 +30,9 @@ if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     const input = access.inputs.values().next().value;
     input.open();
     input.onmidimessage = (message) => {
-      if (message.length == 12) updateReadValue(message);
-      if (message.length == 80) updatePingResult(message);
+      console.log(message.data)
+      if (message.data.length == 12) updateReadValue(message);
+      if (message.data.length == 80) updatePingResult(message);
     }
   })
 }
@@ -57,7 +58,8 @@ function sendPingMessage() {
 
 function updatePingResult(message) {
   latestPingData = message;
-  if (message[70] === 1) { // preset_edit flag is true
+  if (message.data[70] === 1) { // preset_edit flag is true
+    console.log('edit')
     burnPreset(127);
     loadPreset(127);
     readAllValues();
@@ -82,7 +84,7 @@ function readAllValues() {
  **/
 
 function sendReadMessage(control) {
-  console.log(`sending read message from ${control} with value ${value}`);
+  console.log(`sending read message from ${control} with value`);
 
   let userControl = userControls.indexOf(control);
   userControl = byteConvert(userControl);
