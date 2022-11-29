@@ -57,12 +57,25 @@ function sendPingMessage() {
 
 function updatePingResult(message) {
   latestPingData = message;
-  // TODO: take some actions based on what the data is
+  if (message[70] === 1) { // preset_edit flag is true
+    burnPreset(127);
+    loadPreset(127);
+    readAllValues();
+  }
 }
 
 // Ping filter every second
 window.setInterval(sendPingMessage, 1000);
 
+// Send a read message to every control
+function readAllValues() {
+  for (control of userControls) {
+    if (document.getElementById(control) != null) {
+      // Some controls are listed for completeness but don't exist in code (see data.js for more)
+      sendReadMessage(control);
+    }
+  }
+}
 
 /**
  * Single-value read message sending and receiving from the filter
