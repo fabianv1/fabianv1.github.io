@@ -69,7 +69,7 @@ function updatePingResult(message) {
 }
 
 // Ping filter every second
-window.setInterval(sendPingMessage, 1000);
+window.setInterval(sendPingMessage, 2000);
 
 // Send a read message to every control
 function readAllValues() {
