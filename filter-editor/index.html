@@ -26,6 +26,11 @@
         particular number changes the current settings on the Filter to match the settings of the preset.
       </p>
 
+    <div>
+      <button onclick="testMessages()">Test connectivity with the filter</button>
+      <span id="testResult"></span>
+    </div>
+
     <fieldset id="settings" tabindex="0">
       <legend><h2>Settings</h2></legend>
       <select id="groups" accesskey="g">
@@ -58,9 +63,6 @@
         Load preset at given index into filter
       </button>
     </fieldset>
-    <button onclick="testMessages()">
-      
-    </button>
 
     <!-- The script needs to be at the end of the body so that it's 
       only called once the body divs are already created -->

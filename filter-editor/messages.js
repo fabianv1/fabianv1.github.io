@@ -210,25 +210,25 @@ function byteDeconvert(bytes) {
  */
 
 function testMessages() {
-  console.log('Testing Read Messages...')
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
-  .then((access) => {
-    const output = access.outputs.values().next().value;
-    output.open();
-    const input = access.inputs.values().next().value;
-    input.open();
-    input.onmidimessage = (message) => {
-      console.log('Message received!!')
-      console.log(message.data);
-    }
+    .then((access) => {
+      const output = access.outputs.values().next().value;
+      output.open();
+      const input = access.inputs.values().next().value;
+      input.open();
+      input.onmidimessage = (message) => {
+        document.getElementById('testResult').innerText = "Filter connected.";
+      }
 
-    // Bytes are annotated below, corresponding to the syntax given above. 
-    // Bytes that need to be set are marked *, the rest should not be changed
-    //     Start  ------ID------   --Command-- -Control*-  End
-    msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x60, 0x00, 0x00, 0xf7];
-    output.send(msg);
-    console.log('Message sent.')
-
-  })
-}
+      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x60, 0x00, 0x00, 0xf7];
+      output.send(msg);
+      setTimeout(function() {
+        if (document.getElementById('testResult').innerText !== "Filter connected.") {
+          document.getElementById('testResult').innerText = "Filter not connected."
+        }
+      }, 5000); // wait five seconds
+    })
+  } else {
+    document.getElementById('testResult').innerText = "Filter not connected.";
+  }
 }
