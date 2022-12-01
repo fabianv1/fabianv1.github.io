@@ -203,3 +203,31 @@ function byteConvert(num) {
 function byteDeconvert(bytes) {
   return 128 * bytes[0] + bytes[1];
 }
+
+/**
+ * Test function to make sure bidirectional messaging still works
+ */
+
+function testMessages() {
+  console.log('Testing Read Messages...')
+  if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
+  .then((access) => {
+    const output = access.outputs.values().next().value;
+    output.open();
+    const input = access.inputs.values().next().value;
+    input.open();
+    input.onmidimessage = (message) => {
+      console.log('Message received!!')
+      console.log(message.data);
+    }
+
+    // Bytes are annotated below, corresponding to the syntax given above. 
+    // Bytes that need to be set are marked *, the rest should not be changed
+    //     Start  ------ID------   --Command-- -Control*-  End
+    msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x60, 0x00, 0x00, 0xf7];
+    output.send(msg);
+    console.log('Message sent.')
+
+  })
+}
+}
