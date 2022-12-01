@@ -30,7 +30,7 @@ const data = {
   // },
   voice1: {
     dropdowns: {
-      source: ['monoInput1', 'monoInput2', 'stereoInputMix'],
+      source: ['Mono Input 1', 'Mono Input 2', 'Stereo Input Mix'],
       destination: ['distortionFilter', 'filterOnly', 'directOutput'],
       
     },
@@ -39,33 +39,31 @@ const data = {
   },
   voice2: {
     dropdowns: {
-      source: ['monoInput1', 'monoInput2', 'stereoInputMix'],
+      source: ['Mono Input 1', 'Mono Input 2', 'Stereo Input Mix'],
       destination: ['distortionFilter', 'filterOnly', 'directOutput'],
       
     },
     knobs: ['level', 'processor'],
     checkboxes: ['enable']
   },
-  // TODO: octave1 and octave2 correspond to voice3 and voice4, but need to figure out
-  // the trickier parts of the correspondence - in particular, what 'filtering' corresponds to
-  // octave1: {
-  //   dropdowns: {
-  //     source: ['down1', 'down2', 'up1'],
-  //     destination: ['distortionFilter', 'filterOnly', 'directOutput'],
+  octave1: {
+    dropdowns: {
+      octave: ['down2', 'down1'],
+      destination: ['distortionFilter', 'filterOnly', 'directOutput'],
       
-  //   },
-  //   knobs: ['level', 'processorPan', 'filtering'],
-  //   checkboxes: ['enable']
-  // },
-  // octave2: {
-  //   dropdowns: {
-  //     source: ['down1', 'down2', 'up1'],
-  //     destination: ['distortionFilter', 'filterOnly', 'directOutput'],
+    },
+    knobs: ['level', 'processor'],
+    checkboxes: ['enable']
+  },
+  octave2: {
+    dropdowns: {
+      octave: ['down2', 'down1'],
+      destination: ['distortionFilter', 'filterOnly', 'directOutput'],
       
-  //   },
-  //   knobs: ['level', 'processorPan', 'filtering'],
-  //     checkboxes: ['enable']
-  // },
+    },
+    knobs: ['level', 'processor', 'detune'],
+      checkboxes: ['enable']
+  },
   filter1: {
    dropdowns: {
       type: ['3ParallelLowPass', '6PoleLowPass', '2PoleLowPass', 'NotchLowPassPeak', 'NotchNotchLowPass',
@@ -120,8 +118,7 @@ const data = {
         'ADSR 4',
         'ADSR 5',
         'ADSR 6 Slow Attack, Fast Decay',
-        'Fastest Attack, Adjust/Decay',
-        'Wide Range 1, Adjust Attack/Decay'
+        'Fastest Attack, Adjust/Decay'
       ],
       input: ['1', '2'], // TODO these seemed to be reversed but then swapping them did not help, maybe a sourceaudio bug?
     },
@@ -141,8 +138,7 @@ const data = {
         'ADSR 4',
         'ADSR 5',
         'ADSR 6 Slow Attack, Fast Decay',
-        'Fastest Attack, Adjust/Decay',
-        'Wide Range 1, Adjust Attack/Decay'
+        'Fastest Attack, Adjust/Decay'
       ],
       input: ['1', '2'],
     },
@@ -203,33 +199,33 @@ const userControls = [
   'voice2-tremoloSource', //
   'voice2-modulate', //
   'voice2-enable',
-  // Voice 3 and voice 4 don't seem to exist in the editor at all, so none of these are used
-  'voice3-level',
-  'voice3-processor',
-  'voice3-detune',
-  'voice3-tremolo',
-  'voice3-octave',
-  'voice3-semitone',
-  'voice3-mode',
-  'voice3-source',
-  'voice3-envelope',
-  'voice3-destination',
-  'voice3-tremoloSource',
-  'voice3-modulate',
-  'voice3-enable',
-  'voice4-level',
-  'voice4-processor',
-  'voice4-detune',
-  'voice4-tremolo',
-  'voice4-octave',
-  'voice4-semitone',
-  'voice4-mode',
-  'voice4-source',
-  'voice4-envelope',
-  'voice4-destination',
-  'voice4-tremoloSource',
-  'voice4-modulate',
-  'voice4-enable',
+  // Voice 3 and voice 4 are mapped to octave1 and octave2 but most of the functionality doesn't appear
+  'octave1-level',
+  'octave1-processor',
+  'octave1-detune',
+  'octave1-tremolo',
+  'octave1-octave',
+  'octave1-semitone',
+  'octave1-mode',
+  'octave1-source',
+  'octave1-envelope',
+  'octave1-destination',
+  'octave1-tremoloSource',
+  'octave1-modulate',
+  'octave1-enable',
+  'octave2-level',
+  'octave2-processor',
+  'octave2-detune',
+  'octave2-tremolo',
+  'octave2-octave',
+  'octave2-semitone',
+  'octave2-mode',
+  'octave2-source',
+  'octave2-envelope',
+  'octave2-destination',
+  'octave2-tremoloSource',
+  'octave2-modulate',
+  'octave2-enable',
   // Distortion group
   'distortion-drive',
   'distortion-cleanMix',
@@ -366,12 +362,11 @@ const differentlyOrderedDropdowns = {
     'Wide Range 2, Faster Decay',
     'Snappy',
     'ADSR 2 Fast Attack, Adjust Decay',
-    'ADSR 3 Adjusst Attack/Decay',
+    'ADSR 3 Adjust Attack/Decay',
     'ADSR 4',
     'ADSR 5',
-    'ADSR 6 Slow Attack, Fast Decay',
-    'Fastest Attack, Adjust/Decay',
-    'Wide Range 1, Adjust Attack/Decay'
+    'ADSR 6 Slow Attack, Fast Decay', '', '',
+    'Fastest Attack, Adjust/Decay'
   ],
   'envelope2-type': [
     'ADSR 1 Adjust Attack/Decay',
@@ -384,10 +379,31 @@ const differentlyOrderedDropdowns = {
     'ADSR 3 Adjust Attack/Decay',
     'ADSR 4',
     'ADSR 5',
-    'ADSR 6 Slow Attack, Fast Decay',
-    'Fastest Attack, Adjust/Decay',
-    'Wide Range 1, Adjust Attack/Decay'
+    'ADSR 6 Slow Attack, Fast Decay', '', '',
+    'Fastest Attack, Adjust/Decay'
   ],
+  'octave1-octave': [
+    '','',
+    'down2',
+    'down1'
+  ],
+  'octave2-octave': [
+    '','',
+    'down2',
+    'down1'
+  ],
+  'voice1-source': [
+    'Stereo Input Mix',
+    '', '', '', '', '', '', '', '', '', '',
+    'Mono Input 1',
+    'Mono Input 2'
+  ],
+  'voice2-source': [
+    'Stereo Input Mix',
+    '', '', '', '', '', '', '', '', '', '',
+    'Mono Input 1',
+    'Mono Input 2'
+  ]
 }
 
 // User Control Numbers:
@@ -399,7 +415,7 @@ const differentlyOrderedDropdowns = {
 // - Sine 2 FM Depth is         0x60 // correctly is number 0x60 = 96 in list rn
 // - Sequencer 1 Value 3 is     0x70 // incorrectly is 110 in list rn, two smaller than it should be
 // - Sequencer 2 Value 2 is     0x80 -> 0x01, 0x00
-// - Harmony Key is            0x90 -> 0x01, 0x10
+// - Harmony Key is             0x90 -> 0x01, 0x10
 // - External Control Max 2 is  0xa0 -> 0x01, 0x20
 // - Engaged/Bypass Toggle is   0xb0 -> 0x01, 0x30
 // - Decrement Preset is        0xb5 -> 0x01, 0x35
