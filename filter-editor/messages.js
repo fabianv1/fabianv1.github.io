@@ -60,6 +60,10 @@ function sendPingMessage() {
 
 function updatePingResult(message) {
   latestPingData = message;
+  const presetNum = byteDeconvert([message.data[11], message.data[12]]);
+  if (presetNum != 127) {
+    document.getElementById('presetIndex').value = presetNum;
+  }
   if (message.data[70] === 1) { // preset_edit flag is true
     console.log('Value edited on filter.')
     burnPreset(127);
