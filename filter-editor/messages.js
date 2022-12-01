@@ -85,6 +85,7 @@ function readAllValues() {
     }
   }
 }
+readAllValues()
 
 /**
  * Single-value read message sending and receiving from the filter
