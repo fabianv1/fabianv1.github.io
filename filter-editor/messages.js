@@ -204,6 +204,13 @@ function sendWriteMessage(control, value) {
   }
 }
 
+// Send a write only when no other calls to this function are made in 500 ms
+let timerId = null;
+function sendDelayedWriteMessage(control, value) {
+  if (timerId) clearTimeout(timerId);
+  timerId = setTimeout(() => sendWriteMessage(control, value), 500);
+}
+
 /**
  * Helper functions
  **/

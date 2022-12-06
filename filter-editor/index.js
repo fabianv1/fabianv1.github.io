@@ -72,7 +72,7 @@ function createKnobs (group, data, dom) {
     input.setAttribute("class", "number");
     input.setAttribute("min", 0);
     input.setAttribute("max", 254);
-    input.setAttribute("onchange", `sendWriteMessage('${group}-${name}', this.value)`);
+    input.setAttribute("onchange", `sendDelayedWriteMessage('${group}-${name}', this.value)`);
 
     label.appendChild(input);
     div.appendChild(label);
