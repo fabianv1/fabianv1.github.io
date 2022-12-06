@@ -42,7 +42,7 @@ if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
 /**
  * Set up ping sending and receiving from the filter
  **/
-let latestPingData;
+let altStatus = 0; // alt button is off by default
 
 function sendPingMessage() {
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
@@ -59,9 +59,8 @@ function sendPingMessage() {
 }
 
 function updatePingResult(message) {
-  latestPingData = message;
   const presetNum = byteDeconvert([message.data[11], message.data[12]]);
-  if (presetNum != 127) {
+  if (presetNum != 127) { // If not our hardcoded preset
     document.getElementById('presetIndex').value = presetNum;
   }
   if (message.data[70] === 1) { // preset_edit flag is true
@@ -69,6 +68,10 @@ function updatePingResult(message) {
     burnPreset(127);
     loadPreset(127);
     readAllValues();
+  }
+  if (message.data[74] !== altStatus) { // TODO: what is alt button index // alt button status changed
+    document.getElementById('alt-button').innerText = message.data[0] ? 'on' : 'off';
+    altStatus = message.data[74];
   }
 }
 
