@@ -56,16 +56,22 @@
       <legend><h2>Presets (p) </h2></legend>
       <div id="presetIndex-value">
         <label> presetIndex:
-          <input type="number" class="number" id="presetIndex" min="0" max="127" value="6" accesskey="p">
+          <input type="number" class="number" id="presetIndex" min="0" max="127" value="6" accesskey="p" onchange="resetPresetMessages()">
         </label>
       </div>
       <!-- TODO: consider adding name input field or dropdown once we can read from filter -->
-      <button onclick="burnPreset(presetIndex.value)">
-        Burn current filter settings to given preset index
-      </button>
-      <button onclick="loadPreset(presetIndex.value)">
-        Load preset at given index into filter
-      </button>
+      <div>
+        <button onclick="burnPreset(presetIndex.value)">
+          Burn current filter settings to given preset index
+        </button>
+        <span id="burn-message" tabindex="0"></span>
+      </div>
+      <div>
+        <button onclick="loadPreset(presetIndex.value)">
+          Load preset at given index into filter
+        </button>
+        <span id="load-message" tabindex="0"></span>
+      </div>
     </fieldset>
 
     <!-- The script needs to be at the end of the body so that it's 

@@ -21,6 +21,7 @@ function burnPreset(presetIndex) {
       msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x6e, 0x00, presetIndex, 0x00, 0x00, 0xf7];
 
       output.send(msg);
+      document.getElementById('burn-message').innerText = 'Preset burned.';
     })
   }
 }
@@ -44,6 +45,12 @@ function loadPreset(presetIndex) {
       msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x77, 0x00, presetIndex, 0xf7];
 
       output.send(msg);
+      document.getElementById('load-message').innerText = 'Preset loaded.';
     })
   }
+}
+
+function resetPresetMessages() {
+  document.getElementById('burn-message').innerText = '';
+  document.getElementById('load-message').innerText = '';
 }
