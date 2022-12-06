@@ -85,7 +85,7 @@ window.setInterval(sendPingMessage, 2000);
 
 // Send a read message to every control
 function readAllValues() {
-  messageOrder = 0;
+  messageOrder = 0; 
   messagesArray = []
   for (control of userControls) {
     if (document.getElementById(control) != null) {
