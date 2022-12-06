@@ -63,11 +63,16 @@ function updatePingResult(message) {
   if (presetNum != 127) { // If not our hardcoded preset
     document.getElementById('presetIndex').value = presetNum;
   }
+  console.log('echoed control num: ', byteDeconvert(message.data.slice(71, 73)))
   if (message.data[70] === 1) { // preset_edit flag is true
     console.log('Value edited on filter.')
-    burnPreset(127);
-    loadPreset(127);
-    readAllValues();
+    // burnPreset(127);
+    // loadPreset(127);
+    // readAllValues();
+    control_number =  byteDeconvert(message.data.slice(71, 73))
+    if (control_number !== 200 && control_number != 201) {
+      sendReadMessage(userControls[control_number])
+    }
   }
   if (message.data[74] !== altStatus) { // TODO: what is alt button index // alt button status changed
     document.getElementById('alt-button').innerText = message.data[0] ? 'on' : 'off';
@@ -92,7 +97,7 @@ function readAllValues() {
     }
   }
 }
-readAllValues()
+// readAllValues()
 
 /**
  * Single-value read message sending and receiving from the filter
@@ -114,7 +119,7 @@ function sendReadMessage(control) {
       // Bytes are annotated below, corresponding to the syntax given above. 
       // Bytes that need to be set are marked *, the rest should not be changed
       //     Start  ------ID------   --Command-- -Control*-  End
-      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x60, 0x00, 0x00, 0xf7];
+      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0xf7];
       msg[6] = userControl[0];
       msg[7] = userControl[1];
       output.send(msg);
@@ -128,7 +133,9 @@ function updateReadValue(message) {
   // Start --Command-- -------------------Data Value-----------------  End
   // 0xF0, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x14, 0xF7
   // Data value is almost always only last two bytes
-  let controlBeingRead = messagesArray[messageOrder]
+  // let controlBeingRead = messagesArray[messageOrder]
+  console.log('control num read: ', byteDeconvert(message.data.slice(1, 3)));
+  let controlBeingRead = userControls[byteDeconvert(message.data.slice(1, 3))];
   const elmnt = document.getElementById(controlBeingRead);
   const group = controlBeingRead.split('-')[0];
   const option = controlBeingRead.split('-')[1];
