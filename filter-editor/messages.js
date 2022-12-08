@@ -80,6 +80,8 @@ function updatePingResult(message) {
         ['masterControls-input1Gain', 'masterControls-masterDepth', 'filter1-frequency', 'envelope1-speed'];
       knobs.forEach(control => sendReadMessage(control));
       sendReadMessage('masterControls-input1Gain', resetEdit=true); // read first control just to reset
+    } else if (control_number == 201) {
+      readAllValues();
     }
   }
   if (message.data[74] !== altStatus) { // TODO: what is alt button index // alt button status changed
@@ -104,7 +106,7 @@ function readAllValues() {
   }
   sendReadMessage('masterControls-input1Gain', resetEdit=true); // read first control just to reset
 }
-// readAllValues()
+readAllValues()
 
 /**
  * Single-value read message sending and receiving from the filter
@@ -117,8 +119,8 @@ function sendReadMessage(control, resetEdit=false) {
   userControl = byteConvert(userControl);
   // console.log(`UCN is ${userControl}`);
   controlBeingRead = control;
-  console.log('Control:', control);
-  console.log('UCN: ', userControl);
+  // console.log('Control:', control);
+  // console.log('UCN: ', userControl);
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
       const output = access.outputs.values().next().value;
