@@ -69,9 +69,16 @@ function updatePingResult(message) {
     // burnPreset(127);
     // loadPreset(127);
     // readAllValues();
+
+    // 200 = no edit in editor, 201 = multi-edit, other numbers = user control num of the single edit
     control_number =  byteDeconvert(message.data.slice(71, 73))
     if (control_number !== 200 && control_number != 201) {
       sendReadMessage(userControls[control_number])
+    } else if (control_number == 200) {
+      // filter may still be edited, so check those four knobs
+      knobs = message.data[74] ? ['envelope1-sensitivity', 'masterControls-mix', 'res??', 'masterControls-outputLevel'] : 
+        ['masterControls-input1gain', 'masterControls-masterDepth', 'filter1-frequency', 'envelope1-speed'];
+      knobs.forEach(control => sendReadMessage(control));
     }
   }
   if (message.data[74] !== altStatus) { // TODO: what is alt button index // alt button status changed
