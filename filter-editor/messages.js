@@ -76,7 +76,7 @@ function updatePingResult(message) {
       sendReadMessage(userControls[control_number])
     } else if (control_number == 200) {
       // filter may still be edited, so check those four knobs
-      knobs = message.data[74] ? ['envelope1-sensitivity', 'masterControls-mix', 'res??', 'masterControls-outputLevel'] : 
+      knobs = message.data[74] ? ['envelope1-sensitivity', 'masterControls-mix', 'filter1-q', 'masterControls-outputLevel'] : 
         ['masterControls-input1gain', 'masterControls-masterDepth', 'filter1-frequency', 'envelope1-speed'];
       knobs.forEach(control => sendReadMessage(control));
       sendReadMessage('masterControls-input1gain', resetEdit=true); // read first control just to reset
