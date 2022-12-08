@@ -79,6 +79,7 @@ function updatePingResult(message) {
       knobs = message.data[74] ? ['envelope1-sensitivity', 'masterControls-mix', 'res??', 'masterControls-outputLevel'] : 
         ['masterControls-input1gain', 'masterControls-masterDepth', 'filter1-frequency', 'envelope1-speed'];
       knobs.forEach(control => sendReadMessage(control));
+      sendReadMessage('masterControls-input1gain', resetEdit=true); // read first control just to reset
     }
   }
   if (message.data[74] !== altStatus) { // TODO: what is alt button index // alt button status changed
@@ -99,10 +100,9 @@ function readAllValues() {
       messagesArray.push(control);
       // Some controls are listed for completeness but don't exist in code (see data.js for more)
       sendReadMessage(control);
-    } else {
-
     }
   }
+  sendReadMessage('masterControls-input1gain', resetEdit=true); // read first control just to reset
 }
 // readAllValues()
 
@@ -110,7 +110,7 @@ function readAllValues() {
  * Single-value read message sending and receiving from the filter
  **/
 
-function sendReadMessage(control) {
+function sendReadMessage(control, resetEdit=false) {
   // console.log(`sending read message from ${control} with value`);
   messageReceived = false;
   let userControl = userControls.indexOf(control);
@@ -125,10 +125,11 @@ function sendReadMessage(control) {
 
       // Bytes are annotated below, corresponding to the syntax given above. 
       // Bytes that need to be set are marked *, the rest should not be changed
-      //     Start  ------ID------   --Command-- -Control*-  End
+      //     Start  ------ID------   --Command-- -Control*-  Extra Bytes  End
       msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0xf7];
       msg[6] = userControl[0];
       msg[7] = userControl[1];
+      if (resetEdit) msg[9] = 1; // extra command to reset the edited flag back to false
       output.send(msg);
 
     })

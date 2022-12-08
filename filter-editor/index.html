@@ -61,10 +61,9 @@
       <legend><h2>Presets (p) </h2></legend>
       <div id="presetIndex-value">
         <label> presetIndex:
-          <input type="number" class="number" id="presetIndex" min="0" max="127" value="6" accesskey="p" onchange="resetPresetMessages()">
+          <input type="number" class="number" id="presetIndex" min="0" max="127" accesskey="p" onchange="resetPresetMessages()">
         </label>
       </div>
-      <!-- TODO: consider adding name input field or dropdown once we can read from filter -->
       <div>
         <button onclick="burnPreset(presetIndex.value)">
           Burn current filter settings to given preset index
