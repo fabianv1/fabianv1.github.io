@@ -77,9 +77,9 @@ function updatePingResult(message) {
     } else if (control_number == 200) {
       // filter may still be edited, so check those four knobs
       knobs = message.data[74] ? ['envelope1-sensitivity', 'masterControls-mix', 'filter1-q', 'masterControls-outputLevel'] : 
-        ['masterControls-input1gain', 'masterControls-masterDepth', 'filter1-frequency', 'envelope1-speed'];
+        ['masterControls-input1Gain', 'masterControls-masterDepth', 'filter1-frequency', 'envelope1-speed'];
       knobs.forEach(control => sendReadMessage(control));
-      sendReadMessage('masterControls-input1gain', resetEdit=true); // read first control just to reset
+      sendReadMessage('masterControls-input1Gain', resetEdit=true); // read first control just to reset
     }
   }
   if (message.data[74] !== altStatus) { // TODO: what is alt button index // alt button status changed
@@ -102,7 +102,7 @@ function readAllValues() {
       sendReadMessage(control);
     }
   }
-  sendReadMessage('masterControls-input1gain', resetEdit=true); // read first control just to reset
+  sendReadMessage('masterControls-input1Gain', resetEdit=true); // read first control just to reset
 }
 // readAllValues()
 
@@ -117,7 +117,8 @@ function sendReadMessage(control, resetEdit=false) {
   userControl = byteConvert(userControl);
   // console.log(`UCN is ${userControl}`);
   controlBeingRead = control;
-
+  console.log('Control:', control);
+  console.log('UCN: ', userControl);
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
       const output = access.outputs.values().next().value;
