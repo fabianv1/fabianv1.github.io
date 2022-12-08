@@ -290,6 +290,7 @@ function byteDeconvert(bytes) {
 function testMessages() {
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
+      document.getElementById('testResult').innerText = "Beginning test. Please wait a few seconds.";
       const output = access.outputs.values().next().value;
       output.open();
       const input = access.inputs.values().next().value;
@@ -302,7 +303,7 @@ function testMessages() {
       output.send(msg);
       setTimeout(function() {
         if (document.getElementById('testResult').innerText !== "Filter connected.") {
-          document.getElementById('testResult').innerText = "Filter not connected."
+          document.getElementById('testResult').innerText = "Filter not connected.";
         }
       }, 5000); // wait five seconds
     })

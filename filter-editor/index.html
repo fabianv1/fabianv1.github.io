@@ -4,30 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Spectrum Filter - Accessible Editor - Prototype 2</title>
+    <title>Spectrum Filter - Accessible Editor</title>
   </head>
   <body>
-	  <h1 tabindex="0">Spectrum Filter - Accessible Editor - Prototype 2</h1>
+	  <h1 tabindex="0">Spectrum Filter - Accessible Editor</h1>
       <p tabindex="0">
-        This prototype replicates the functionality of the Neuro Desktop Editor
+        This tool replicates the functionality of the Neuro Desktop Editor
         to interact with and change the settings of the Spectrum Intellingent Filter.
-        The prototype provides most of the functionality of the original editor. A few settings
-        are missing and some have only partial functionality.
+        The editor has many groups of settings, each of which controls a different part of the filter.
+        It was designed by Fabian Velasquez and Shuli Jones as part of MIT PPAT 2022. The code can be found at 
+        <a href="https://github.com/fabianv1/fabianv1.github.io">https://github.com/fabianv1/fabianv1.github.io</a>.
       </p>
       <p tabindex="0">
-        To use the editor, change the "groups" dropdown (accesskey g) to choose which group of settings
+        To use the editor, first plug the filter into your computer via USB. Use the "Test connectivity"
+        button (accesskey t) to make sure it's connected. If you need to troubleshoot, check the GitHub
+        repo README. Once you're connected, use the "groups" dropdown (accesskey g) to choose which group of settings
         you want to change. Based on this group, a set of dropdowns, checkboxes, and/or value setters will appear.
-        When the Spectrum Filter is connected to your computer via USB, changing these elements will automatically
-        change the corresponding setting on the Filter. 
+        Changing these elements will automatically change the corresponding setting on the Spectrum Filter. 
       </p>
       <p tabindex="0">
-        You can also use this prototype to burn and load presets (accesskey p). Burning a preset to a particular
+        You can also use this tool to burn and load presets (accesskey p). Burning a preset to a particular
         number saves the current settings on the Filter to the preset of that number. Loading a preset with a
         particular number changes the current settings on the Filter to match the settings of the preset.
+        Finally, you can use this tool to check if the Filter's alt button is pressed (accesskey a). When this button is pressed,
+        the four knobs on the filter take on different values and the preset value changes. The preset value is also 
+        reflected in the preset section.
       </p>
 
     <div>
-      <button onclick="testMessages()">Test connectivity with the filter</button>
+      <button onclick="testMessages()" accesskey="t">Test connectivity with the filter (t)</button>
       <span id="testResult" tabindex="0"></span>
     </div>
 
