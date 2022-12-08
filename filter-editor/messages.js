@@ -168,6 +168,11 @@ function sendWriteMessage(control, value) {
   const group = control.split('-')[0];
   const option = control.split('-')[1];
 
+  if (['octave1-source', 'octave2-source'].includes(control)) { // special case for octave 1 and 2 sources
+    sendOctaveSourceWrite(control, value);
+    return;
+  }
+
   // value could be a number, boolean, or string depending on what kind of option is in control
   if (Object.keys(data[group]['dropdowns']).includes(option)) {  // dropdown -> string
     if (control in differentlyOrderedDropdowns) {
@@ -200,6 +205,51 @@ function sendWriteMessage(control, value) {
       msg[10] = dataValue[0];
       msg[11] = dataValue[1];
       output.send(msg)
+    })
+  }
+}
+
+/**
+ * Special sendWriteMessage for octave1-source and octave2-source User Control Numbers
+ * the octave source, octave, and envelope parameters must be set together
+ **/
+function sendOctaveSourceWrite(control, value) {
+  let octave, source, envelope;
+  let octave_val, source_val, envelope_val;
+
+  data_mapping = {
+    '1 Octave Down': [0x03, 0x03, 0x00],
+    '2 Octaves Down': [0x02, 0x03, 0x00],
+    '1 Octave Up': [0x05, 0x05, 0x01]
+  }
+  if (control === 'octave1-source') {
+    [octave, source, envelope] = [0x28, 0x2b, 0x2c];
+    [octave_val, source_val, envelope_val] = data_mapping[value];
+  } else {
+    [octave, source, envelope] = [0x35, 0x38, 0x39];
+    [octave_val, source_val, envelope_val] = data_mapping[value];
+    source_val++;
+  }
+
+  if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
+    .then((access) => {
+      const output = access.outputs.values().next().value;
+      output.open();
+
+      // Bytes are annotated below, corresponding to the syntax given above. 
+      // Bytes that need to be set are marked *, the rest should not be changed
+      //     Start  ------ID------   --Command-- -Control*- ------Data Value*------  End
+      msg = [0xf0, 0x00, 0x01, 0x6c, 0x00, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf7];
+
+      msg[7] = source;
+      msg[11] = source_val;
+      output.send(msg);
+      msg[7] = octave;
+      msg[11] = octave_val;
+      output.send(msg);
+      msg[7] = envelope;
+      msg[11] = envelope_val;
+      output.send(msg);
     })
   }
 }

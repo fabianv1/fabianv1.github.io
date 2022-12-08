@@ -48,7 +48,7 @@ const data = {
   },
   octave1: {
     dropdowns: {
-      octave: ['down2', 'down1'],
+      source: ['1 Octave Down', '2 Octaves Down', '1 Octave Up'],
       destination: ['distortionFilter', 'filterOnly', 'directOutput'],
       
     },
@@ -381,16 +381,6 @@ const differentlyOrderedDropdowns = {
     'ADSR 5',
     'ADSR 6 Slow Attack, Fast Decay', '', '',
     'Fastest Attack, Adjust/Decay'
-  ],
-  'octave1-octave': [
-    '','',
-    'down2',
-    'down1'
-  ],
-  'octave2-octave': [
-    '','',
-    'down2',
-    'down1'
   ],
   'voice1-source': [
     'Stereo Input Mix',
