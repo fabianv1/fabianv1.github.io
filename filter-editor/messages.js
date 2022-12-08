@@ -75,7 +75,7 @@ function updatePingResult(message) {
     }
   }
   if (message.data[74] !== altStatus) { // TODO: what is alt button index // alt button status changed
-    document.getElementById('alt-button').innerText = message.data[0] ? 'on' : 'off';
+    document.getElementById('alt-button').innerText = message.data[74] ? 'on' : 'off';
     altStatus = message.data[74];
   }
 }
