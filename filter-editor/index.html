@@ -17,7 +17,9 @@
       </p>
       <p tabindex="0">
         To use the editor, first plug the filter into your computer via USB. Use the "Test connectivity"
-        button (accesskey t) to make sure it's connected. If you need to troubleshoot, check the GitHub
+        button (accesskey t) to make sure it's connected. "If the connectivity results in 'Filter not connected', please
+        unplug the USB from the computer (not the device) and unplg the power from the filter pedal for 10 seconds before
+        testing again. This should now lead to the filer being connected." If you need to troubleshoot, check the GitHub
         repo README. Once you're connected, use the "groups" dropdown (accesskey g) to choose which group of settings
         you want to change. Based on this group, a set of dropdowns, checkboxes, and/or value setters will appear.
         Changing these elements will automatically change the corresponding setting on the Spectrum Filter. 
@@ -59,22 +61,25 @@
     
     <fieldset id="presets" tabindex="0">
       <legend><h2>Presets (p) </h2></legend>
+      <p tabindex="0">
+        Current preset index (c): <span id="current-preset" accesskey="c" tabindex="0">Getting current preset...</span>
+      </p>
       <div id="presetIndex-value">
-        <label> presetIndex:
+        <label>Preset index input:
           <input type="number" class="number" id="presetIndex" min="0" max="127" accesskey="p" onchange="resetPresetMessages()">
         </label>
-      </div>
-      <div>
-        <button onclick="burnPreset(presetIndex.value)">
-          Burn current filter settings to given preset index
-        </button>
-        <span id="burn-message" tabindex="0"></span>
       </div>
       <div>
         <button onclick="loadPreset(presetIndex.value)">
           Load preset at given index into filter
         </button>
         <span id="load-message" tabindex="0"></span>
+      </div>
+      <div>
+        <button onclick="burnPreset(presetIndex.value)">
+          Burn current filter settings to given preset index
+        </button>
+        <span id="burn-message" tabindex="0"></span>
       </div>
     </fieldset>
 
