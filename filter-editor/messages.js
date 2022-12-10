@@ -24,13 +24,11 @@
 // Two kinds of messages: 
 // 1) status of single filter value
 // 2) status of overall filter (called 'ping')
-// let controlBeingRead = null;
 if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
   .then((access) => {
     const input = access.inputs.values().next().value;
     input.open();
     input.onmidimessage = (message) => {
-      // console.log(message.data)
       if (message.data.length == 12) updateReadValue(message);
       if (message.data.length == 80) updatePingResult(message);
     }
@@ -59,11 +57,7 @@ function sendPingMessage() {
 function updatePingResult(message) {
   const presetNum = byteDeconvert([message.data[11], message.data[12]]);
   document.getElementById('current-preset').innerHTML = presetNum;
-  console.log('echoed control num: ', byteDeconvert(message.data.slice(71, 73)))
   if (message.data[70] === 1) { // preset_edit flag is true
-    // document.getElementById('current-preset').innerHTML = `Preset ${presetNum} is currently being edited`; // when a 
-    console.log('Value edited on filter.')
-
     // 200 = no edit in editor, 201 = multi-edit, other numbers = user control num of the single edit
     control_number =  byteDeconvert(message.data.slice(71, 73))
     if (control_number !== 200 && control_number != 201) {
@@ -90,17 +84,15 @@ window.setInterval(sendPingMessage, 1000);
 // Send a read message to every control
 function readAllValues() {
   messageOrder = 0; 
-
   for (control of userControls) {
     if (document.getElementById(control) != null) {
-    
       // Some controls are listed for completeness but don't exist in code (see data.js for more)
       sendReadMessage(control);
     }
   }
   sendReadMessage('masterControls-input1Gain', resetEdit=true); // read first control just to reset
 }
-readAllValues()
+readAllValues(); // read everything on startup so that current values are displayed in the editor
 
 /**
  * Single-value read message sending and receiving from the filter
@@ -113,8 +105,6 @@ function sendReadMessage(control, resetEdit=false) {
   userControl = byteConvert(userControl);
   // console.log(`UCN is ${userControl}`);
   controlBeingRead = control;
-  // console.log('Control:', control);
-  // console.log('UCN: ', userControl);
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
     .then((access) => {
       const output = access.outputs.values().next().value;
@@ -138,7 +128,6 @@ function updateReadValue(message) {
   // Start --Command-- -------------------Data Value-----------------  End
   // 0xF0, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x14, 0xF7
   // Data value is almost always only last two bytes
-  console.log('control num read: ', byteDeconvert(message.data.slice(1, 3)));
   let controlBeingRead = userControls[byteDeconvert(message.data.slice(1, 3))];
   const elmnt = document.getElementById(controlBeingRead);
   const group = controlBeingRead.split('-')[0];
