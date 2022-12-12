@@ -32,7 +32,7 @@ function createDropdowns (data, dom, name = null) {
   if (name != null) {
     container = document.createElement('select');
     
-    container.setAttribute('onchange', `sendWriteMessage('${name}', this.value)`);
+    container.setAttribute('onchange', `sendDelayedWriteMessage('${name}', this.value, 500)`);
   } else {
     container = dom;
   }
@@ -72,7 +72,7 @@ function createKnobs (group, data, dom) {
     input.setAttribute("class", "number");
     input.setAttribute("min", 0);
     input.setAttribute("max", 254);
-    input.setAttribute("onchange", `sendDelayedWriteMessage('${group}-${name}', this.value)`);
+    input.setAttribute("onchange", `sendDelayedWriteMessage('${group}-${name}', this.value, 500)`);
 
     label.appendChild(input);
     div.appendChild(label);
