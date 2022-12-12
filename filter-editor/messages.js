@@ -136,9 +136,9 @@ function updateReadValue(message) {
   const value = byteDeconvert([message.data[9], message.data[10]]);
   // value could correspond to a number, boolean, or string depending on what kind of option is in control
   if (Object.keys(data[group]['dropdowns']).includes(option)) {  // dropdown -> string
-    if (control in differentlyOrderedDropdowns) {
+    if (controlBeingRead in differentlyOrderedDropdowns) {
       // elmnt is actually the dropdown's label wrapper, so need to set the second child (after the label text)
-      elmnt.childNodes[1].value = differentlyOrderedDropdowns[control][value];
+      elmnt.childNodes[1].value = differentlyOrderedDropdowns[controlBeingRead][value];
     } else {
       elmnt.childNodes[1].value = data[group]['dropdowns'][option][value];
     }

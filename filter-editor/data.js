@@ -7,14 +7,14 @@
 const data = {
   masterControls: {
     dropdowns: {},
-    knobs: ["input1Gain", "input2Gain", "masterDepth", "modulationSource", "bass",
-              "treble", "wetDryMix", "loRetain", "outputLevel", "outputBalance"],
+    knobs: ["input1Gain", "input2Gain", "masterDepth", "modSource", "bass",
+              "treble", "dryWetMix", "loRetain", "outputVolume", "outputBalance"],
   },
   distortion: {
     dropdowns: {
-      type: ['mild', 'moderate', 'heavyBassy', 'sampleReducer', 'octaveFuzz', 'gatedFuzz',
-            'foldoverLight', 'foldoverHeavy', 'doubleFoldover', 'doubleOctaveFuzz', 'tripleFold',
-            'singleClip', 'maxFoldover'],
+      type: ['Mild', 'Moderate', 'Heavy and Bassy', 'Sample Reducer', 'Octave Fuzz', 'Gated Fuzz',
+            'Foldover Light', 'Foldover Heavy', 'Double Foldover', 'Double Octave Fuzz', 'Triple Fold',
+            'Single Clip', 'Max Foldover'],
     },
     knobs: ['drive', 'cleanMix', 'output'],
     checkboxes: ['enable'],
@@ -22,7 +22,7 @@ const data = {
   voice1: {
     dropdowns: {
       source: ['Mono Input 1', 'Mono Input 2', 'Stereo Input Mix'],
-      destination: ['distortionFilter', 'filterOnly', 'directOutput'],
+      destination: ['Distortion + Filter', 'Filter Only', 'Direct Output'],
       
     },
     knobs: ['level', 'processorPan'],
@@ -31,7 +31,7 @@ const data = {
   voice2: {
     dropdowns: {
       source: ['Mono Input 1', 'Mono Input 2', 'Stereo Input Mix'],
-      destination: ['distortionFilter', 'filterOnly', 'directOutput'],
+      destination: ['Distortion + Filter', 'Filter Only', 'Direct Output'],
       
     },
     knobs: ['level', 'processorPan'],
@@ -40,19 +40,19 @@ const data = {
   octave1: {
     dropdowns: {
       source: ['1 Octave Down', '2 Octaves Down', '1 Octave Up'],
-      destination: ['distortionFilter', 'filterOnly', 'directOutput'],
+      destination: ['Distortion + Filter', 'Filter Only', 'Direct Output'],
       
     },
-    knobs: ['level', 'processor'],
+    knobs: ['level', 'processorPan'],
     checkboxes: ['enable']
   },
   octave2: {
     dropdowns: {
-      octave: ['down2', 'down1'],
-      destination: ['distortionFilter', 'filterOnly', 'directOutput'],
+      source: ['1 Octave Down', '2 Octaves Down', '1 Octave Up'],
+      destination: ['Distortion + Filter', 'Filter Only', 'Direct Output'],
       
     },
-    knobs: ['level', 'processor', 'detune'],
+    knobs: ['level', 'processorPan'],
       checkboxes: ['enable']
   },
   filter1: {
@@ -118,7 +118,7 @@ const data = {
   lfo: {
     dropdowns: {
       shape: ['sine', 'pluck', 'square', 'risingSaw', 'fallingSaw', 'triangle', 'sampleHold',
-    '4Step', '4StepSh', 'sineSh', 'sineRiseSkew', 'sineFallSkew', 'triangleRiseSkew', 'triangleFallSkew'],
+    '4Step', '4Step + SampleHold', 'sine + SampleHold', 'sineRiseSkew', 'sineFallSkew', 'triangleRiseSkew', 'triangleFallSkew'],
       multiply: ['1', '2', '3', '4', '5', '6', '7', '8', '16', '32', '64'],
       tap: ['Whole', 'Half', 'Quarter', 'Eighth', 'Triplet', 'Sixteenth'],
     },
@@ -137,12 +137,12 @@ const userControls = [
   'masterControls-input1Gain',
   'masterControls-input2Gain',
   'masterControls-masterDepth',
-  'masterControls-modulationSource',
+  'masterControls-modSource',
   'masterControls-bass',
   'masterControls-treble',
-  'masterControls-wetDryMix',
+  'masterControls-dryWetMix',
   'masterControls-loRetain',
-  'masterControls-outputLevel',
+  'masterControls-outputVolume',
   'masterControls-outputBalance',
   // Voice groups (many functions not used)
   'voice1-level',
@@ -174,7 +174,7 @@ const userControls = [
   // Voice 3 and voice 4 are mapped to Octave 1 and Octave 2 but some
   // functionality is not used; octave, source, and envelope are coupled
   'octave1-level',
-  'octave1-processor',
+  'octave1-processorPan',
   'octave1-detune', //
   'octave1-tremolo', //
   'octave1-octave',
@@ -187,7 +187,7 @@ const userControls = [
   'octave1-modulate', //
   'octave1-enable',
   'octave2-level',
-  'octave2-processor',
+  'octave2-processorPan',
   'octave2-detune', //
   'octave2-tremolo', //
   'octave2-octave',
