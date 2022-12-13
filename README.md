@@ -82,13 +82,111 @@ Index.js has three sections:
    
 
 ### Message Sending and Receiving
+Message sending and receiving are done by leveraging the JavaScript WebMIDI API and custom SysEx messages provided by SourceAudio's CTO. It also uses the objects in data.js and semi-hardcoded MIDI messages to send and receive messages from the filter. The four main partitions of our messaging are writing, reading, pinging, and preset messages. Commands unique to each use-case are consistent with a specified message syntax and few bytes that are variable.
+
+Note that because MIDI message contents can’t exceed 127 (0x7F), 8-bit values must be split into two 7-bit values. For example, data that is 16 bits must have its upper 8 bits split into 2 bytes and lower 8 bits split into two bytes, for a total of 4 bytes. The helper functions `byteConvert` and `byteDeconvert` converts one 8-bit value into two 7-bit values and two 7-bit values into one 8-bit value respectively. 
+
 
 #### Write Messages
+Write messages are used to set individual parameters based on a specified User Control Number and Data Value. This is implemented in the `sendWriteMessage` function which takes in control and value arguments, and is called when an input occurs from the settings UI. It uses `userControls` to match the control to its byte value and modifies the byte array accordingly. Since some of these input spaces can go through many different values (such as the slider) before landing on the desired input, there is also a `sendDelayedWriteMessage` which allows the `sendWriteMessage` to trigger only when an input space is on a value longer than 500ms. Lastly, the `octave1-source` and `octave2-source` inputs are a special case where 3 parameters need to be set. These are caught in the generic `sendWriteMessage` and prompt the `sendOctaveSourceWrite` function to send 3 messages to set the 3 parameters. 
+
+Message syntax varies depending on message type, but basically is as follows:
+```
+[
+  SysEx Start (1 byte: 0xF0),
+  Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
+  Command Type (2 bytes: 0x00 0x70 is Write User Control),
+  User Control Number (2 bytes, variable: e.g. 0x00, 0x02 is Master Depth),
+  Data Value for writes (4 bytes, variable: 
+      16-bits max input but most knobs are 8-bit with max value of 254 [more info below]),
+  SysEx End (1 byte: 0xf7)
+]
+```
 
 #### Read Messages
+Read messages are used to get the current value of a specified UCN from the filter into our editor. Read messages only take in a control as input and use the `userControls` to find the corresponding byte value. This functionality is implemented by the `sendReadMessage` function. It also takes in an optional `resetEdit` flag that resets the edit flag that is returned from sending a pinging message. 
+
+When the editor is first accessed and when there are multiple changes flagged, all values need to be read. This is done by the `readAllValues` function which goes through every `userControls` element that is present on the dom. 
+
+The read messages syntax follows the write message syntax closely, but does not have a data value field.
+```
+[
+  SysEx Start (1 byte: 0xF0),
+  Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
+  Command Type (2 bytes: 0x00 0x60 is Read User Control),
+  User Control Number (2 bytes, variable: e.g. 0x00, 0x02 is Master Depth),
+  Extra bytes for manual reset (2 bytes: 0x00, 0x01 if reset),
+  SysEx End (1 byte: 0xf7)
+]
+```
+
+The read message prompts the filter to send a 12 byte message response that is caught by an `onmidimessage` function implemented at the top of `messages.js`. It prompts the `updateReadValue` function which takes in that message as input and parses it to get the value of the parameter, as well as the UCN of the parameter itself. Using these bytes, it gets the string value of the parameter by indexing into `userControls` and updated the website with appropriate value: the string value of a dropdown from the data object, a numerical value if its a knob, or a checkmark boolean value.
+
+The following is the structure of a read message response.
+```
+[
+  SysEx Start (1 byte: 0xF0),
+  UCN (2 bytes: e.g. 0x00, 0x02 is Master Depth),
+  Data Value (8 bytes),
+  SysEx End (1 byte: 0xf7)
+]
+```
+
 
 #### Ping Messages
+The pinging message is the way our editor detects when a change or edit has occurred. This is a hardcoded MIDI message with no variable inputs and is prompted to send every second using `window.setInterval` and the function `sendPingMessage`. 
+
+The ping message syntax is as follows:
+```
+[
+  SysEx Start (1 byte: 0xF0),
+  Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
+  Command Type (2 bytes: 0x00, 0x45),
+  Data Value (2 bytes: 0x00, 0x00),
+  SysEx End (1 byte: 0xf7)
+]
+```
+
+The substance of this message is in its response, which indicates a variety of things: preset, alt button status, if an edit has occured, and whether it is a specified UCN, multiple, or none. This response is again caught by an `onmidimessage` function implemented at the top of `messages.js` and is 80 bytes long. It prompts the `updatePingResult` fuction which takes in the message as its argument. 
+
+There are six bytes of importance in the respond message. The function first updates the current preset using byte 11 and 12 (zero indexing) and chaning the corresponding HTML element. It then checks if an edit has occured using byte 70 as its edit flag and this triggers a few different checks. The control number is specified by bytes 71 and 72, and will prompt a read value if it exists in `userControls`. If the control number is 201, this indicates multiple edits and calls `readAllValues` to ensure all these edits are reflected. The interesting case is when the control number is 200, since it tells us no edit was made but the edit flag was true. This can occur when a knob on the physical pedal is twiddled and we then prompt a read for each possible knob (there are only 4 and which 4 depends on the alt button status). The alt button status is indicated to us by byte 74 of the response and updates the alt button status element of the website to provide feedback.
 
 #### Preset Messages
+The preset burning and loading functions are implemented in a separate file `preset.js`. There are 128 possible presets with 0-127 being the indices. It is implemented into two functions `burnPreset` and `loadPreset` which are triggered by two different buttons on the website. Both functions also update the website with feedback messages when a burn or load occur.
+
+`burnPreset` takes in an index as its input and updated the current preset element of the website before sending the message to burn the new preset. It then has a hardcoded structure for its MIDI message and only changes one variable based on the index given. The MIDI message itself can also support the naming of the preset with ascii values but this is not implemented in our editor. The function also calls `loadPreset` of the newly burned preset index to ensure that the pedal state is consistent with user actions. 
+
+The syntax of the burn preset message is as follows.
+```
+[
+  SysEx Start (1 byte: 0xF0),
+  Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
+  Command Type (2 bytes: 0x00, 0x6e),
+  Preset Index (2 bytes, variable),
+  If name (2 bytes: hardcoded to 0x00, 0x00)
+  SysEx End (1 byte: 0xf7)
+]
+```
+
+`loadPreset` takes in an index and an optional flag of burn to indicate if it was called by `burnPreset`. This flag is used to silence the message "Preset loaded" when a burn occurs since the user did not directly load the preset, the burn did. This is also a hardcoded MIDI message with one byte as variable.
+
+The syntax of the load preset message is as follows:
+```
+[
+  SysEx Start (1 byte: 0xF0),
+  Source Audio MIDI SysEx ID (3 bytes: 0x00, 0x01, 0x6c),
+  Command Type (2 bytes: 0x00, 0x6e),
+  Preset Index (2 bytes, variable),
+  SysEx End (1 byte: 0xf7)
+]
+```
 
 ### Troubleshooting
+
+Troubleshooting, as far as we have seen, will only occur in the event the filter does not have connectivity with its reading functionality. This can be checked by pressing the "test connectivity" button, which calls the `testMessages` function implemented in `messages.js` and checks if a read to masterControls-inputGain1 returns a message. If after 5 seconds the message after the button reads 'Filter not connected.', please do the following:
+
+1) Unplug the usb connect between the computer and the filter from the computer port (not the filter port). Also unplug the power cable from the filter.
+2) Wait 15 seconds
+3) Plug back in and press the 'Test Connectivity' button
+4) Within 5 seconds, the message should say Filter connected. If it says 'Filter not connected', please repeat steps 1-3.
+5) Once the filter is connected, refresh the page and values should appear in the number sliders.
