@@ -39,6 +39,7 @@ if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
  * Set up ping sending and receiving from the filter
  **/
 let altStatus = 0; // alt button is off by default
+let firmware; // firmware version null by default
 
 function sendPingMessage() {
   if (navigator.requestMIDIAccess) {navigator.requestMIDIAccess({ sysex: true })
@@ -72,9 +73,16 @@ function updatePingResult(message) {
       readAllValues();
     }
   }
+
   if (message.data[74] !== altStatus) {
     document.getElementById('alt-button').innerText = message.data[74] ? 'on' : 'off';
     altStatus = message.data[74];
+  }
+
+  const version = [byteDeconvert(message.data.slice(3,5)), byteDeconvert(message.data.slice(5,7))];
+  if (version !== firmware) {
+    document.getElementById('firmware-version').innerText = version[0] + '.' + version[1];
+    firmware = version;
   }
 }
 
@@ -246,11 +254,11 @@ function sendOctaveSourceWrite(control, value) {
   }
 }
 
-// Send a write only when no other calls to this function are made in 500 ms
+// Send a write only when no other calls to this function are made for `delay` ms
 let timerId = null;
-function sendDelayedWriteMessage(control, value) {
+function sendDelayedWriteMessage(control, value, delay) {
   if (timerId) clearTimeout(timerId);
-  timerId = setTimeout(() => sendWriteMessage(control, value), 500);
+  timerId = setTimeout(() => sendWriteMessage(control, value), delay);
 }
 
 /**
