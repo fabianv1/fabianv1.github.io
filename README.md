@@ -7,12 +7,12 @@ This editor is built to mirror the [Neuro Desktop Editor](https://www.sourceaudi
 It is usable by anyone but especially intended for those using screenreaders.
 It was built as part of MIT's Principles and Practice of Assistive Technology class, Fall 2022, by Fabian Velasquez and Shuli Jones, with invaluable support from Rich Caloggero and Jesse Remignanti.
 
-### Basic Use
+### Setup and Basic Use
 To use this editor, you will need to run it in your browser. 
 You will need to have the Spectrum Intelligent Filter and a cable to connect the Filter to your computer. 
 You will also need whatever else you use with the Filter (for example, your guitar, an amp, and I/O cables).
 
-Open the editor in your browser and plug the Filter into your computer. 
+First ensure no browsers are running and plug the Filter into your computer before. Then open and run a MIDI supported browser, and navigate to the editor linked above.
 This is all that is needed: you should now be able to use the editor to change the settings on the Filter.
 You can use the 'Test Connectivity' button on the editor to confirm that the editor is connected to the Filter. 
 Either opening the editor or pressing this button will cause a popup requesting that you grant WebMIDI access to the Filter. You must click allow.
@@ -185,7 +185,9 @@ The syntax of the load preset message is as follows:
 Troubleshooting, as far as we have seen, will only occur in the event that the filter does not have connectivity with its reading functionality. This can be checked by pressing the "test connectivity" button, which calls the `testMessages` function implemented in `messages.js` and checks if a read to a random control (in this case masterControls-inputGain1) returns a message. If after waiting 5 seconds, the message after the button reads 'Filter not connected.', please do the following:
 
 1) Unplug the USB connect between the computer and the filter from the computer port (*not* the filter port). Also unplug the power cable from the filter.
-2) Wait 15 seconds
-3) Plug both cables back in and press the 'Test Connectivity' button
-4) Within 5 seconds, the message should say Filter connected. If it says 'Filter not connected', please repeat steps 1-3.
-5) Once the filter is connected, refresh the page and values should appear in the number sliders.
+2) Close any browsers you have open.
+3) Wait 15 seconds.
+4) Plug both cables back in before opening a browser.
+5) Open and run any MIDI supported browser, navigate to the wesbite at the top of this document, and press the 'Test Connectivity' button
+6) Within 5 seconds, the message should say Filter connected. If it says 'Filter not connected', please repeat steps 1-5.
+7) Once the filter is connected, refresh the page and values should appear in the number sliders.
